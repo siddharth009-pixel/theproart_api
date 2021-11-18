@@ -8,10 +8,9 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('Marvel')
-    .setDescription('Marvel Mock API')
+    .setTitle('The ProArt Rest API')
+    // .setDescription('Marvel Mock API')
     .setVersion('1.0')
-    .addTag('marvel')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);

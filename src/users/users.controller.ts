@@ -14,8 +14,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { GetUsersDto } from './dto/get-users.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
+@ApiTags('User')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Post()
@@ -56,6 +58,7 @@ export class UsersController {
 }
 
 @Controller('profiles')
+@ApiTags('profiles')
 export class ProfilesController {
   constructor(private readonly usersService: UsersService) {}
 

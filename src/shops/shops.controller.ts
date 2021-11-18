@@ -14,8 +14,10 @@ import { UpdateShopDto } from './dto/update-shop.dto';
 import { GetShopsDto, ShopPaginator } from './dto/get-shops.dto';
 import { GetStaffsDto } from './dto/get-staffs.dto';
 import { UserPaginator } from 'src/users/dto/get-users.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('shops')
+@ApiTags('Shops')
 export class ShopsController {
   constructor(private readonly shopsService: ShopsService) {}
 
@@ -53,6 +55,7 @@ export class ShopsController {
   }
 }
 @Controller('staffs')
+@ApiTags('staffs')
 export class StaffsController {
   constructor(private readonly shopsService: ShopsService) {}
 

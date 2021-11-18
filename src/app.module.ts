@@ -18,6 +18,7 @@ import { CouponsModule } from './coupons/coupons.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { ImportsModule } from './imports/imports.module';
 import { AuthModule } from './auth/auth.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AuthModule } from './auth/auth.module';
     AddressesModule,
     ImportsModule,
     AuthModule,
+    MongooseModule.forRoot('mongodb://localhost:27017/nest')
   ],
   controllers: [],
   providers: [],

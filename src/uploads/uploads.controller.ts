@@ -5,9 +5,11 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { UploadsService } from './uploads.service';
 
 @Controller('attachments')
+@ApiTags('UploadFiles')
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 

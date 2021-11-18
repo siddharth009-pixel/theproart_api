@@ -8,12 +8,14 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CouponsService } from './coupons.service';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { GetCouponsDto } from './dto/get-coupons.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 
 @Controller('coupons')
+@ApiTags('Coupons')
 export class CouponsController {
   constructor(private readonly couponsService: CouponsService) {}
 

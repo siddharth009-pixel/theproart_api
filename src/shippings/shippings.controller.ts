@@ -12,8 +12,10 @@ import { ShippingsService } from './shippings.service';
 import { CreateShippingDto } from './dto/create-shipping.dto';
 import { UpdateShippingDto } from './dto/update-shipping.dto';
 import { GetShippingsDto } from './dto/get-shippings.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('shippings')
+@ApiTags('Shippings')
 export class ShippingsController {
   constructor(private readonly shippingsService: ShippingsService) {}
 

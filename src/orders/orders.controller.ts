@@ -15,8 +15,10 @@ import { GetOrdersDto, OrderPaginator } from './dto/get-orders.dto';
 import { CreateOrderStatusDto } from './dto/create-order-status.dto';
 import { GetOrderStatusesDto } from './dto/get-order-statuses.dto';
 import { CheckoutVerificationDto } from './dto/verify-checkout.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('orders')
+@ApiTags('Orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
@@ -56,6 +58,7 @@ export class OrdersController {
 }
 
 @Controller('order-status')
+@ApiTags('order-status')
 export class OrderStatusController {
   constructor(private readonly ordersService: OrdersService) {}
   @Post()

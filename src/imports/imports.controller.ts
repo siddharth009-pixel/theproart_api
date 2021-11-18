@@ -1,8 +1,10 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { ImportsService } from './imports.service';
 import { ImportDto } from './dto/create-import.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('Imports')
 export class ImportsController {
   constructor(private readonly importsService: ImportsService) {}
 

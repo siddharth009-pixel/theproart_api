@@ -11,8 +11,10 @@ import { WithdrawsService } from './withdraws.service';
 import { CreateWithdrawDto } from './dto/create-withdraw.dto';
 import { ApproveWithdrawDto } from './dto/approve-withdraw.dto';
 import { GetWithdrawsDto, WithdrawPaginator } from './dto/get-withdraw.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('withdraws')
+@ApiTags('Withdraws')
 export class WithdrawsController {
   constructor(private readonly withdrawsService: WithdrawsService) {}
 

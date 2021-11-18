@@ -12,8 +12,10 @@ import { TypesService } from './types.service';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { UpdateTypeDto } from './dto/update-type.dto';
 import { GetTypesDto } from './dto/get-types.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('types')
+@ApiTags('Types')
 export class TypesController {
   constructor(private readonly typesService: TypesService) {}
 

@@ -14,8 +14,10 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { GetProductsDto, ProductPaginator } from './dto/get-products.dto';
 import { Product } from './entities/product.entity';
 import { GetPopularProductsDto } from './dto/get-popular-products.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('products')
+@ApiTags('Product')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -46,6 +48,7 @@ export class ProductsController {
 }
 
 @Controller('popular-products')
+@ApiTags('popular-products')
 export class PopularProductsController {
   constructor(private readonly productsService: ProductsService) {}
   @Get()
