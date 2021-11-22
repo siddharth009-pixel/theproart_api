@@ -18,8 +18,9 @@ import { CouponsModule } from './coupons/coupons.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { ImportsModule } from './imports/imports.module';
 import { AuthModule } from './auth/auth.module';
-import { MongooseModule } from '@nestjs/mongoose';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Connection, getConnectionOptions } from 'typeorm';
+import { DemouserModule } from './demouser/demouser.module';
 @Module({
   imports: [
     UsersModule,
@@ -41,7 +42,14 @@ import { MongooseModule } from '@nestjs/mongoose';
     AddressesModule,
     ImportsModule,
     AuthModule,
-    MongooseModule.forRoot('mongodb://localhost:27017/nest')
+    TypeOrmModule.forRootAsync({
+      useFactory: async () =>
+        Object.assign(await getConnectionOptions(), {
+          autoLoadEntities: true,
+          retryAttempts:2
+        }),
+    }),
+    DemouserModule
   ],
   controllers: [],
   providers: [],
