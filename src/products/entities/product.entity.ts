@@ -1,16 +1,17 @@
-import { AttributeValue } from 'src/attributes/entities/attribute-value.entity';
-import { Category } from 'src/categories/entities/category.entity';
-import { Attachment } from 'src/common/entities/attachment.entity';
-import { CoreEntity } from 'src/common/entities/core.entity';
-import { Order } from 'src/orders/entities/order.entity';
+import { AttributeValue, AttributeValueT } from 'src/attributes/entities/attribute-value.entity';
+import { Category, CategoryT } from 'src/categories/entities/category.entity';
+import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
+import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
+import { Order, OrderT } from 'src/orders/entities/order.entity';
 import { Shop } from 'src/shops/entities/shop.entity';
-import { Tag } from 'src/tags/entities/tag.entity';
-import { Type } from 'src/types/entities/type.entity';
-enum ProductStatus {
+import { Tag, TagT } from 'src/tags/entities/tag.entity';
+import { Type, TypeT } from 'src/types/entities/type.entity';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+export enum ProductStatus {
   PUBLISH = 'publish',
   DRAFT = 'draft',
 }
-enum ProductType {
+export enum ProductType {
   SIMPLE = 'simple',
   VARIABLE = 'variable',
 }
@@ -70,3 +71,140 @@ export class VariationOption {
   name: string;
   value: string;
 }
+
+
+@Entity('OrderProductPivot')
+export class OrderProductPivotT {
+  @PrimaryGeneratedColumn()
+  id:number;
+  @Column()
+  variation_option_id?: number;
+  @Column()
+  order_quantity: number;
+  @Column()
+  unit_price: number;
+  @Column()
+  subtotal: number;
+}
+
+@Entity('VariationOption')
+export class VariationOptionT {
+  @PrimaryGeneratedColumn()
+  id:number;
+  @Column()
+  name: string;
+  @Column()
+  value: string;
+}
+
+@Entity('Variation')
+export class VariationT {
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column()
+  title: string;
+  @Column()
+  price: number;
+  @Column()
+  sku: string;
+  @Column()
+  is_disable: boolean;
+  @Column()
+  sale_price?: number;
+  @Column()
+  quantity: number;
+  @OneToMany(()=>VariationOptionT,vo=>vo.id)
+  @JoinColumn()
+  options: VariationOptionT[];
+}
+
+@Entity('Product')
+export class ProductT extends CoreEntityT {
+  @Column()
+  name: string;
+
+  @Column()
+  slug: string;
+ 
+  @Column()
+  type_id: number;
+
+  @Column() 
+  description: string;
+  @Column() 
+  in_stock: boolean;
+  @Column()
+  is_taxable: boolean;
+  @Column()
+  sale_price?: number;
+  @Column()
+  max_price?: number;
+  @Column()
+  min_price?: number;
+  @Column()
+  sku?: string;
+  
+  @Column()
+  height?: string;
+  @Column()
+  length?: string;
+  @Column()
+  width?: string;
+  @Column()
+  price?: number;
+  @Column()
+  quantity: number;
+  @Column()
+  unit: string;
+
+  @OneToOne(()=>TypeT,typ=>typ.id)
+  type: TypeT;
+
+  @Column({
+    type: "enum",
+    enum: ProductType,
+    default: ProductType.SIMPLE
+  })
+  product_type: ProductType;
+
+  @Column({
+    type: "enum",
+    enum: ProductStatus,
+    default: ProductStatus.DRAFT
+  })
+  status: ProductStatus;
+
+  @ManyToMany(()=>CategoryT,cate=>cate.products)
+  @JoinTable()
+  categories: CategoryT[];
+
+  @ManyToMany(()=>TagT,tagt=>tagt.products)
+  @JoinTable()
+  tags?: TagT[];
+
+  @OneToMany(()=>AttributeValueT,att=>att.id)
+  variations?: AttributeValueT[];
+
+  @OneToMany(()=>VariationT,att=>att.id)
+  variation_options?: VariationT[];
+
+  @OneToOne(()=>OrderProductPivotT,att=>att.id)
+  pivot?: OrderProductPivotT;
+
+  @ManyToMany(()=>OrderT,(orderT)=>orderT.products)
+  orders?: OrderT[];
+
+  @OneToMany(()=>AttachmentT,att=>att.id)
+  @JoinColumn()
+  gallery?: AttachmentT[];
+
+  @OneToOne(()=>AttachmentT,att=>att.id)
+  @JoinColumn()
+  image?: AttachmentT;
+
+  
+  // shop: Shop;
+  // related_products?: Product[];
+  // shop_id: number;
+}
+

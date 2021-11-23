@@ -1,10 +1,11 @@
-import { UserAddress } from 'src/addresses/entities/address.entity';
-import { CoreEntity } from 'src/common/entities/core.entity';
-import { Coupon } from 'src/coupons/entities/coupon.entity';
-import { Product } from 'src/products/entities/product.entity';
-import { Shop } from 'src/shops/entities/shop.entity';
-import { User } from 'src/users/entities/user.entity';
-import { OrderStatus } from './order-status.entity';
+import { UserAddress, UserAddressT } from 'src/addresses/entities/address.entity';
+import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
+import { Coupon, CouponT } from 'src/coupons/entities/coupon.entity';
+import { Product, ProductT } from 'src/products/entities/product.entity';
+import { Shop, ShopT } from 'src/shops/entities/shop.entity';
+import { User, UserT } from 'src/users/entities/user.entity';
+import { Check, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { OrderStatus, OrderStatusT } from './order-status.entity';
 export enum PaymentGatewayType {
   STRIPE = 'stripe',
   CASH_ON_DELIVERY = 'cod',
@@ -32,4 +33,85 @@ export class Order extends CoreEntity {
   products: Product[];
   billing_address: UserAddress;
   shipping_address: UserAddress;
+}
+
+
+@Entity('orders')
+export class OrderT extends CoreEntityT {
+  @Column()
+  tracking_number: string;
+
+  @Column()
+  customer_id: number;
+
+  @Column()
+  customer_contact: string;
+
+  @ManyToOne(()=>UserT,(usert:UserT)=>usert.orders)
+  customer: UserT;
+  
+  @Column()
+  amount: number;
+
+  @Column()
+  sales_tax: number;
+
+  @Column()
+  total: number;
+
+  @Column()
+  paid_total: number;
+
+  @Column()
+  payment_id?: string;
+
+  @Column({
+    type:'enum',
+    enum:PaymentGatewayType,
+    default:PaymentGatewayType.CASH_ON_DELIVERY
+  })
+  payment_gateway: PaymentGatewayType;
+
+  @ManyToOne(()=>CouponT,(coupent:CouponT)=>coupent.orders)
+  coupon?: CouponT;
+
+  @Column()
+  discount?: number;
+
+  @Column()
+  delivery_fee: number;
+
+  @Column()
+  delivery_time: string;
+
+  @OneToOne(()=>UserAddressT,(useraddresst:UserAddressT)=>useraddresst.id,
+  {eager:true,cascade:true})
+  @JoinColumn()
+  billing_address: UserAddressT;
+
+  @OneToOne(()=>UserAddressT,(useraddresst:UserAddressT)=>useraddresst.id,
+  {eager:true,cascade:true})
+  @JoinColumn()
+  shipping_address: UserAddressT;
+
+  @ManyToMany(()=>ProductT,(productt)=>productt.orders)
+  @JoinTable()
+  products: ProductT[];
+
+  @OneToOne(()=>ShopT,shop=>shop.id)
+  @JoinColumn()
+  shop: ShopT;
+  
+  @ManyToOne(type => OrderT, category => category.children)
+  parent_order?: OrderT;
+
+  @OneToMany(type => OrderT, category => category.parent_order)
+  children?: OrderT[];
+
+  @OneToOne(()=>OrderStatusT,(orderstatust:OrderStatusT)=>orderstatust.id,{
+    eager:true,cascade:true
+  })
+  @JoinColumn()
+  status: OrderStatusT;
+
 }
