@@ -1,31 +1,36 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
+import { Repository } from 'typeorm';
 import { CreateTaxDto } from './dto/create-tax.dto';
 import { UpdateTaxDto } from './dto/update-tax.dto';
-import { Tax } from './entities/tax.entity';
+import { Tax, TaxT } from './entities/tax.entity';
 import taxesJson from './taxes.json';
 const taxes = plainToClass(Tax, taxesJson);
 @Injectable()
 export class TaxesService {
   private taxes: Tax[] = taxes;
 
+  constructor(@InjectRepository(TaxT) private taxeRepository:Repository<TaxT>){}
+
   create(createTaxDto: CreateTaxDto) {
-    return this.taxes[0];
+    return this.taxeRepository.save(createTaxDto);
   }
 
   findAll() {
-    return this.taxes;
+    return this.taxeRepository.find();
   }
 
   findOne(id: number) {
-    return this.taxes.find((tax) => tax.id === Number(id));
+    return this.taxeRepository.findOne(id);
   }
 
   update(id: number, updateTaxDto: UpdateTaxDto) {
-    return this.taxes[0];
+    return this.taxeRepository.update(id,updateTaxDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tax`;
+  async remove(id: number) {
+    var tax= await this.taxeRepository.findOne(id);
+    this.taxeRepository.delete(tax);
   }
 }

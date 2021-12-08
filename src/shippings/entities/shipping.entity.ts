@@ -22,7 +22,7 @@ export class ShippingT extends CoreEntityT {
   name: string;
   @Column()
   amount: number;
-  @Column()
+  @Column({default:true})
   is_global: boolean;
   @Column({
     type:"enum",

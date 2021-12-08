@@ -15,7 +15,7 @@ export class CoreEntityT{
   @PrimaryGeneratedColumn()
   id:number
   
-  @Column()
+  @Column({nullable:true})
   created_at: Date;
 
   @Column({

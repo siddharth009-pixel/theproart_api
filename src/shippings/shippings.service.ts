@@ -1,32 +1,62 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
+import { Repository } from 'typeorm';
 import { CreateShippingDto } from './dto/create-shipping.dto';
 import { GetShippingsDto } from './dto/get-shippings.dto';
 import { UpdateShippingDto } from './dto/update-shipping.dto';
-import { Shipping } from './entities/shipping.entity';
-import shippingsJson from './shippings.json';
-const shippings = plainToClass(Shipping, shippingsJson);
+import { ShippingT } from './entities/shipping.entity';
+
 @Injectable()
 export class ShippingsService {
-  private shippings: Shipping[] = shippings;
 
-  create(createShippingDto: CreateShippingDto) {
-    return this.shippings[0];
+  constructor(@InjectRepository(ShippingT)
+  private shippintRepository: Repository<ShippingT>) { }
+
+  async create(createShippingDto: CreateShippingDto) {
+    return await this.shippintRepository.save(createShippingDto);
   }
 
-  getShippings({}: GetShippingsDto) {
-    return this.shippings;
+  getShippings({ }: GetShippingsDto) {
+    const shippings = this.shippintRepository.find();
+    return shippings;
   }
 
-  findOne(id: number) {
-    return this.shippings.find((shipping) => shipping.id === Number(id));
+  async findOne(id: number) {
+    const shipping = await this.shippintRepository.findOne(id);
+    if (shipping)
+      return this.shippintRepository.remove(shipping);
+    else
+      return {
+        "code": "400",
+        "message": "Shiping is not Present",
+      };
   }
 
-  update(id: number, updateShippingDto: UpdateShippingDto) {
-    return this.shippings[0];
+  async update(id: number, updateShippingDto: UpdateShippingDto) {
+
+    Logger.log(id);
+    
+    const shipping = await this.shippintRepository.findOne(id);
+    if (shipping)
+      return this.shippintRepository.update(id, updateShippingDto);
+    else
+      return {
+        "code": "400",
+        "message": "Shiping is not Present",
+      };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} shipping`;
+  async remove(id: number) {
+    const shipping = await this.shippintRepository.findOne(id);
+    Logger.log(shipping, 'Shipping')
+    if (shipping)
+      return this.shippintRepository.remove(shipping);
+    else
+      return {
+        "code": "400",
+        "message": "Shiping is not Present",
+      };
+
   }
 }

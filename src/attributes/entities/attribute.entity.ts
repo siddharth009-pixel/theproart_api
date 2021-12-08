@@ -22,7 +22,6 @@ export class AttributeT extends CoreEntityT {
   slug: string;
   @OneToMany(()=>AttributeValueT,values=>values.attribute)
   values: AttributeValueT[];
-
   shop: Shop;
 
 }

@@ -64,21 +64,17 @@ export class TypeT extends CoreEntityT {
   slug: string;
 
   @OneToOne(()=>AttachmentT,(atta)=>atta.id)
-  @JoinColumn()
   image: AttachmentT;
 
   @Column()
   icon: string;
 
   @OneToMany(()=>BannerT,(banner)=>banner.id)
-  @JoinColumn()
   banners?: BannerT[];
 
   @OneToMany(()=>AttachmentT,(atta)=>atta.id)
-  @JoinColumn()
   promotional_sliders?: AttachmentT[];
 
   @OneToOne(()=>TypeSettingsT,typesetting=>typesetting.id)
-  @JoinColumn()
   settings?: TypeSettingsT;
 }

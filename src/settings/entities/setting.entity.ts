@@ -1,7 +1,8 @@
 import { AttributeT } from 'src/attributes/entities/attribute.entity';
 import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
-import { Column, Entity, JoinColumn, JoinTable, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ShopSettingsT } from 'src/shops/entities/shop.entity';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export class Setting extends CoreEntity {
   options: SettingsOptions;
@@ -138,6 +139,8 @@ export class ShopSocialsT {
   icon: string;
   @Column()
   url: string;
+  @ManyToOne(()=>ShopSettingsT,sst=>sst.socials)
+  key:ShopSocialsT;
 }
 
 @Entity('LocationT')
@@ -168,7 +171,7 @@ export class ContactDetailsT {
 
   @OneToMany(()=>ShopSocialsT,sst=>sst.id)
   @JoinColumn()
-  socials: ShopSocials[];
+  socials: ShopSocialsT[];
 
   @Column()
   contact: string;
