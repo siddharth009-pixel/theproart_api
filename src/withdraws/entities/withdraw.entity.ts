@@ -23,18 +23,18 @@ export enum WithdrawStatus {
 @Entity('Withdraw')
 export class WithdrawT extends CoreEntityT {
   @PrimaryGeneratedColumn()
-  id:number;
+  id: number;
   @Column()
   amount: number;
   @Column({
-    type:'enum',
-    enum:WithdrawStatus,
-    default:WithdrawStatus.APPROVED
+    type: 'enum',
+    enum: WithdrawStatus,
+    default: WithdrawStatus.APPROVED,
   })
   status: WithdrawStatus;
   @Column()
   shop_id: number;
-  @OneToMany(()=>ShopT,sp=>sp.id)
+  @OneToMany(() => ShopT, (sp) => sp.id)
   shop: ShopT;
   @Column()
   payment_method: string;

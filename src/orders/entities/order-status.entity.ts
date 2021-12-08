@@ -16,6 +16,6 @@ export class OrderStatusT extends CoreEntityT {
   color: string;
   @Column()
   serial: number;
-  @OneToOne(()=>OrderT,(orderstatust)=>orderstatust.id)
+  @OneToOne(() => OrderT, (orderstatust) => orderstatust.id)
   status: OrderT;
 }

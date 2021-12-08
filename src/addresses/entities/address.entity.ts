@@ -1,6 +1,14 @@
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { User, UserT } from 'src/users/entities/user.entity';
-import { Check, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Check,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export enum AddressType {
   BILLING = 'billing',
@@ -26,7 +34,7 @@ export class UserAddress {
 @Entity('UserAddress')
 export class UserAddressT {
   @PrimaryGeneratedColumn()
-  id:number;
+  id: number;
   @Column()
   street_address: string;
   @Column()
@@ -47,19 +55,20 @@ export class AddressT extends CoreEntityT {
   @Column()
   default: boolean;
 
-  @OneToOne(()=>UserAddressT,(useraddresst)=>useraddresst.id,
-  {eager:true,cascade:true})
+  @OneToOne(() => UserAddressT, (useraddresst) => useraddresst.id, {
+    eager: true,
+    cascade: true,
+  })
   @JoinColumn()
   address: UserAddressT;
 
   @Column({
-    type:'enum',
-    enum:AddressType,
-    default:AddressType.BILLING
+    type: 'enum',
+    enum: AddressType,
+    default: AddressType.BILLING,
   })
   type: AddressType;
 
-  @ManyToOne(()=>UserT,(customer)=>customer.address)
+  @ManyToOne(() => UserT, (customer) => customer.address)
   customer: UserT;
 }
-

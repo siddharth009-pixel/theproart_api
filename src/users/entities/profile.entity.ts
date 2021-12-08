@@ -1,6 +1,13 @@
 import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User, UserT } from './user.entity';
 
 export class Profile extends CoreEntity {
@@ -18,12 +25,13 @@ export class Social {
 
 @Entity()
 export class ProfileT extends CoreEntity {
-
   @PrimaryGeneratedColumn()
-  id:number;
+  id: number;
 
-  @OneToOne(()=>AttachmentT,(attachmentt:AttachmentT)=>attachmentt.id,
-  {eager:true,cascade:true})
+  @OneToOne(() => AttachmentT, (attachmentt: AttachmentT) => attachmentt.id, {
+    eager: true,
+    cascade: true,
+  })
   @JoinColumn()
   avatar?: AttachmentT;
 
@@ -33,20 +41,21 @@ export class ProfileT extends CoreEntity {
   @Column()
   contact?: string;
 
-  @OneToOne(()=>UserT,(usert:UserT)=>usert.profile)
+  @OneToOne(() => UserT, (usert: UserT) => usert.profile)
   customer?: UserT;
-  
-  @OneToMany(()=>SocialT,(socialid:SocialT)=>socialid.id,{
-    cascade:true, eager:true})
+
+  @OneToMany(() => SocialT, (socialid: SocialT) => socialid.id, {
+    cascade: true,
+    eager: true,
+  })
   @JoinColumn()
   socials?: SocialT[];
-
 }
 
 @Entity()
 export class SocialT {
   @PrimaryGeneratedColumn()
-  id:number;
+  id: number;
   @Column()
   type: string;
   @Column()

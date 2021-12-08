@@ -4,6 +4,6 @@ import { TypesController } from './types.controller';
 
 @Module({
   controllers: [TypesController],
-  providers: [TypesService]
+  providers: [TypesService],
 })
 export class TypesModule {}

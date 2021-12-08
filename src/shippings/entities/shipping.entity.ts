@@ -17,17 +17,17 @@ export enum ShippingType {
 @Entity('Shipping')
 export class ShippingT extends CoreEntityT {
   @PrimaryGeneratedColumn()
-  id:number;
+  id: number;
   @Column()
   name: string;
   @Column()
   amount: number;
-  @Column({default:true})
+  @Column({ default: true })
   is_global: boolean;
   @Column({
-    type:"enum",
-    enum:ShippingType,
-    default:ShippingType.FIXED
+    type: 'enum',
+    enum: ShippingType,
+    default: ShippingType.FIXED,
   })
   type: ShippingType;
 }

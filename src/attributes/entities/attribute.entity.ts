@@ -20,8 +20,7 @@ export class AttributeT extends CoreEntityT {
   shop_id: number;
   @Column()
   slug: string;
-  @OneToMany(()=>AttributeValueT,values=>values.attribute)
+  @OneToMany(() => AttributeValueT, (values) => values.attribute)
   values: AttributeValueT[];
   shop: Shop;
-
 }

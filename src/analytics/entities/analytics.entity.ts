@@ -1,5 +1,11 @@
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export class Analytics extends CoreEntity {
   totalRevenue?: number;
@@ -28,7 +34,7 @@ export class AnalyticsT extends CoreEntityT {
   @Column()
   newCustomers?: number;
 
-  @OneToMany(()=>TotalYearSaleByMonthT,tmt=>tmt.id)
+  @OneToMany(() => TotalYearSaleByMonthT, (tmt) => tmt.id)
   @JoinColumn()
   totalYearSaleByMonth?: TotalYearSaleByMonthT[];
 }
@@ -36,7 +42,7 @@ export class AnalyticsT extends CoreEntityT {
 @Entity('TotalYearSaleByMonth')
 export class TotalYearSaleByMonthT {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
   @Column()
   total?: number;
   @Column()

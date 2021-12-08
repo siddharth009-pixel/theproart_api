@@ -10,12 +10,11 @@ export class CoreEntity {
 }
 
 @Entity('CoreEntity')
-export class CoreEntityT{
-
+export class CoreEntityT {
   @PrimaryGeneratedColumn()
-  id:number
-  
-  @Column({nullable:true})
+  id: number;
+
+  @Column({ nullable: true })
   created_at: Date;
 
   @Column({

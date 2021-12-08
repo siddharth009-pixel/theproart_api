@@ -45,7 +45,7 @@ import { Connection, getConnectionOptions } from 'typeorm';
       useFactory: async () =>
         Object.assign(await getConnectionOptions(), {
           autoLoadEntities: true,
-          retryAttempts:2
+          retryAttempts: 2,
         }),
     }),
   ],

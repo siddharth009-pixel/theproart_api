@@ -1,6 +1,13 @@
 import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export class Type extends CoreEntity {
   name: string;
@@ -25,10 +32,8 @@ export class TypeSettings {
   productCard: string;
 }
 
-
 @Entity('Banner')
-export class BannerT { 
-
+export class BannerT {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -38,14 +43,14 @@ export class BannerT {
   @Column()
   description?: string;
 
-  @OneToOne(()=>AttachmentT,(atta)=>atta.id)
+  @OneToOne(() => AttachmentT, (atta) => atta.id)
   image: AttachmentT;
 }
 
 @Entity('TypeSettings')
 export class TypeSettingsT {
   @PrimaryGeneratedColumn()
-  id:number 
+  id: number;
   @Column()
   isHome: boolean;
   @Column()
@@ -56,25 +61,24 @@ export class TypeSettingsT {
 
 @Entity('Type')
 export class TypeT extends CoreEntityT {
-
   @Column()
   name: string;
-  
+
   @Column()
   slug: string;
 
-  @OneToOne(()=>AttachmentT,(atta)=>atta.id)
+  @OneToOne(() => AttachmentT, (atta) => atta.id)
   image: AttachmentT;
 
   @Column()
   icon: string;
 
-  @OneToMany(()=>BannerT,(banner)=>banner.id)
+  @OneToMany(() => BannerT, (banner) => banner.id)
   banners?: BannerT[];
 
-  @OneToMany(()=>AttachmentT,(atta)=>atta.id)
+  @OneToMany(() => AttachmentT, (atta) => atta.id)
   promotional_sliders?: AttachmentT[];
 
-  @OneToOne(()=>TypeSettingsT,typesetting=>typesetting.id)
+  @OneToOne(() => TypeSettingsT, (typesetting) => typesetting.id)
   settings?: TypeSettingsT;
 }

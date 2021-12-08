@@ -12,5 +12,4 @@ export class AttachmentT extends CoreEntityT {
   thumbnail?: string;
   @Column()
   original?: string;
-  
 }

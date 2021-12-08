@@ -19,7 +19,7 @@ export class Tag extends CoreEntity {
 export class TagT extends CoreEntityT {
   @Column()
   name: string;
-  
+
   @Column()
   slug: string;
 
@@ -29,15 +29,15 @@ export class TagT extends CoreEntityT {
   @Column()
   details: string;
 
-  @OneToOne(()=>AttachmentT,attch=>attch.id)
+  @OneToOne(() => AttachmentT, (attch) => attch.id)
   image: AttachmentT;
 
   @Column()
   icon: string;
 
-  @OneToOne(()=>TypeT,{eager:true})
+  @OneToOne(() => TypeT, { eager: true })
   type: TypeT;
 
-  @ManyToMany(()=>ProductT,product=>product.tags)
+  @ManyToMany(() => ProductT, (product) => product.tags)
   products: ProductT[];
 }

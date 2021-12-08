@@ -1,7 +1,14 @@
 import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { Order, OrderT } from 'src/orders/entities/order.entity';
-import { Check, Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import {
+  Check,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 
 export enum CouponType {
   FIXED_COUPON = 'fixed',
@@ -29,18 +36,19 @@ export class CouponT extends CoreEntityT {
   @Column()
   description?: string;
 
-  @OneToMany(()=>OrderT,(ordert:OrderT)=>ordert.coupon,)
+  @OneToMany(() => OrderT, (ordert: OrderT) => ordert.coupon)
   orders?: Order[];
-  
+
   @Column({
-    type:'enum',
-    enum:CouponType,
-    default:CouponType.FIXED_COUPON
+    type: 'enum',
+    enum: CouponType,
+    default: CouponType.FIXED_COUPON,
   })
   type: CouponType;
 
-  @OneToOne(()=>AttachmentT,(attachmentt:AttachmentT)=>attachmentt.id,
-  {eager:true})
+  @OneToOne(() => AttachmentT, (attachmentt: AttachmentT) => attachmentt.id, {
+    eager: true,
+  })
   @JoinColumn()
   image: AttachmentT;
 

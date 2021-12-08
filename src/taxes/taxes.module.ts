@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaxT } from './entities/tax.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([TaxT])],
+  imports: [TypeOrmModule.forFeature([TaxT])],
   controllers: [TaxesController],
-  providers: [TaxesService]
+  providers: [TaxesService],
 })
 export class TaxesModule {}

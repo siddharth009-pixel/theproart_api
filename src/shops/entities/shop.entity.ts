@@ -1,9 +1,27 @@
-import { UserAddress, UserAddressT } from 'src/addresses/entities/address.entity';
+import {
+  UserAddress,
+  UserAddressT,
+} from 'src/addresses/entities/address.entity';
 import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
-import { Location, LocationT, ShopSocials, ShopSocialsT } from 'src/settings/entities/setting.entity';
+import {
+  Location,
+  LocationT,
+  ShopSocials,
+  ShopSocialsT,
+} from 'src/settings/entities/setting.entity';
 import { User, UserT } from 'src/users/entities/user.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export class Balance {
   id: number;
@@ -28,7 +46,6 @@ export class ShopSettings {
   location: Location;
   website: string;
 }
-
 
 export class Shop extends CoreEntity {
   owner_id: number;
@@ -63,25 +80,23 @@ export class PaymentInfoT {
 
 @Entity('ShopSettings')
 export class ShopSettingsT {
-
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(()=>ShopSocialsT,socials=>socials.id)
+  @OneToMany(() => ShopSocialsT, (socials) => socials.id)
   @JoinColumn()
   socials: ShopSocialsT[];
 
   @Column()
   contact: string;
 
-  @OneToOne(()=>LocationT,location=>location.id)
+  @OneToOne(() => LocationT, (location) => location.id)
   @JoinColumn()
   location: Location;
 
   @Column()
   website: string;
 }
-
 
 @Entity('Balance')
 export class BalanceT {
@@ -103,16 +118,15 @@ export class BalanceT {
   @Column()
   current_balance: number;
 
-  @OneToOne(()=>PaymentInfoT,payment_info=>payment_info.id)
+  @OneToOne(() => PaymentInfoT, (payment_info) => payment_info.id)
   @JoinColumn()
   payment_info: PaymentInfoT;
 }
 
 @Entity('Shop')
 export class ShopT extends CoreEntityT {
-
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
 
   @Column()
   owner_id: number;
@@ -125,7 +139,7 @@ export class ShopT extends CoreEntityT {
 
   @Column()
   products_count: number;
- 
+
   @Column()
   name: string;
 
@@ -135,31 +149,30 @@ export class ShopT extends CoreEntityT {
   @Column()
   description?: string;
 
-  @OneToOne(()=>BalanceT,balnace=>balnace.id)
+  @OneToOne(() => BalanceT, (balnace) => balnace.id)
   @JoinColumn()
   balance?: Balance;
 
-  @OneToOne(()=>UserT,owner=>owner.shop_id)
+  @OneToOne(() => UserT, (owner) => owner.shop_id)
   owner: UserT;
 
-  @ManyToMany(()=>UserT,staffs=>staffs.shops)
+  @ManyToMany(() => UserT, (staffs) => staffs.shops)
   @JoinTable()
   staffs?: UserT[];
 
-  @OneToOne(()=>AttachmentT,photo=>photo.id)
+  @OneToOne(() => AttachmentT, (photo) => photo.id)
   @JoinColumn()
   cover_image: AttachmentT;
 
-  @OneToOne(()=>AttachmentT,logo=>logo.id)
+  @OneToOne(() => AttachmentT, (logo) => logo.id)
   @JoinColumn()
   logo?: AttachmentT;
 
-
-  @OneToOne(()=>UserAddressT,useaddress=>useaddress.id)
+  @OneToOne(() => UserAddressT, (useaddress) => useaddress.id)
   @JoinColumn()
   address: UserAddressT;
 
-  @OneToOne(()=>ShopSettingsT,settings=>settings.id)
+  @OneToOne(() => ShopSettingsT, (settings) => settings.id)
   @JoinColumn()
   settings?: ShopSettingsT;
 }

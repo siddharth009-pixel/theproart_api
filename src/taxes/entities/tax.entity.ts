@@ -15,7 +15,7 @@ export class Tax extends CoreEntity {
 @Entity('Tax')
 export class TaxT extends CoreEntityT {
   @PrimaryGeneratedColumn()
-  id:number;
+  id: number;
   @Column()
   name: string;
   @Column()

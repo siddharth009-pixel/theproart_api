@@ -4,6 +4,6 @@ import { WithdrawsController } from './withdraws.controller';
 
 @Module({
   controllers: [WithdrawsController],
-  providers: [WithdrawsService]
+  providers: [WithdrawsService],
 })
 export class WithdrawsModule {}

@@ -11,7 +11,9 @@ const taxes = plainToClass(Tax, taxesJson);
 export class TaxesService {
   private taxes: Tax[] = taxes;
 
-  constructor(@InjectRepository(TaxT) private taxeRepository:Repository<TaxT>){}
+  constructor(
+    @InjectRepository(TaxT) private taxeRepository: Repository<TaxT>,
+  ) {}
 
   create(createTaxDto: CreateTaxDto) {
     return this.taxeRepository.save(createTaxDto);
@@ -26,11 +28,11 @@ export class TaxesService {
   }
 
   update(id: number, updateTaxDto: UpdateTaxDto) {
-    return this.taxeRepository.update(id,updateTaxDto);
+    return this.taxeRepository.update(id, updateTaxDto);
   }
 
   async remove(id: number) {
-    var tax= await this.taxeRepository.findOne(id);
+    const tax = await this.taxeRepository.findOne(id);
     this.taxeRepository.delete(tax);
   }
 }

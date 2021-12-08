@@ -17,6 +17,6 @@ export class AttributeValueT extends CoreEntityT {
   value: string;
   @Column()
   meta?: string;
-  @ManyToOne(()=>AttributeT,att=>att.values)
+  @ManyToOne(() => AttributeT, (att) => att.values)
   attribute: AttributeT;
 }

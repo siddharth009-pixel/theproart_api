@@ -2,7 +2,16 @@ import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { Product, ProductT } from 'src/products/entities/product.entity';
 import { Type, TypeT } from 'src/types/entities/type.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 
 export class Category extends CoreEntity {
   name: string;
@@ -20,7 +29,7 @@ export class Category extends CoreEntity {
 export class CategoryT extends CoreEntityT {
   @Column()
   name: string;
-  
+
   @Column()
   slug: string;
 
@@ -30,18 +39,18 @@ export class CategoryT extends CoreEntityT {
   @Column()
   icon?: string;
 
-  @OneToOne(()=>TypeT,typet=>typet.id)
+  @OneToOne(() => TypeT, (typet) => typet.id)
   type?: TypeT;
 
-  @ManyToOne(type => CategoryT, category => category.children)
+  @ManyToOne((type) => CategoryT, (category) => category.children)
   parent: CategoryT;
 
-  @OneToMany(type => CategoryT, category => category.parent)
+  @OneToMany((type) => CategoryT, (category) => category.parent)
   children: CategoryT[];
 
-  @ManyToMany(()=>ProductT,p=>p.categories)
+  @ManyToMany(() => ProductT, (p) => p.categories)
   products: ProductT[];
 
-  @OneToOne(()=>AttachmentT,attch=>attch.id)
+  @OneToOne(() => AttachmentT, (attch) => attch.id)
   image?: AttachmentT;
 }

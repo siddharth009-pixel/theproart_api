@@ -2,7 +2,17 @@ import { AttributeT } from 'src/attributes/entities/attribute.entity';
 import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { ShopSettingsT } from 'src/shops/entities/shop.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export class Setting extends CoreEntity {
   options: SettingsOptions;
@@ -73,12 +83,10 @@ export class Location {
   formattedAddress: string;
 }
 
-
-
 @Entity('DeliveryTime')
 export class DeliveryTimeT {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
   @Column()
   title: string;
   @Column()
@@ -88,7 +96,7 @@ export class DeliveryTimeT {
 @Entity('SeoSettings')
 export class SeoSettingsT {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
   @Column()
   metaTitle?: string;
   @Column()
@@ -97,7 +105,7 @@ export class SeoSettingsT {
   ogTitle?: string;
   @Column()
   ogDescription?: string;
-  @OneToOne(()=>AttributeT,att=>att.id)
+  @OneToOne(() => AttributeT, (att) => att.id)
   ogImage?: AttachmentT;
   @Column()
   twitterHandle?: string;
@@ -112,7 +120,7 @@ export class SeoSettingsT {
 @Entity('GoogleSettings')
 export class GoogleSettingsT {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
   @Column()
   isEnable: boolean;
   @Column()
@@ -122,7 +130,7 @@ export class GoogleSettingsT {
 @Entity('FacebookSettings')
 export class FacebookSettingsT {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
   @Column()
   isEnable: boolean;
   @Column()
@@ -134,19 +142,19 @@ export class FacebookSettingsT {
 @Entity('ShopSocials')
 export class ShopSocialsT {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
   @Column()
   icon: string;
   @Column()
   url: string;
-  @ManyToOne(()=>ShopSettingsT,sst=>sst.socials)
-  key:ShopSocialsT;
+  @ManyToOne(() => ShopSettingsT, (sst) => sst.socials)
+  key: ShopSocialsT;
 }
 
 @Entity('LocationT')
 export class LocationT {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
   @Column()
   lat: number;
   @Column()
@@ -163,23 +171,22 @@ export class LocationT {
   formattedAddress: string;
 }
 
-
 @Entity('ContactDetails')
 export class ContactDetailsT {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
 
-  @OneToMany(()=>ShopSocialsT,sst=>sst.id)
+  @OneToMany(() => ShopSocialsT, (sst) => sst.id)
   @JoinColumn()
   socials: ShopSocialsT[];
 
   @Column()
   contact: string;
-  
-  @OneToOne(()=>LocationT,lo=>lo.id)
+
+  @OneToOne(() => LocationT, (lo) => lo.id)
   @JoinColumn()
   location: LocationT;
-  
+
   @Column()
   website: string;
 }
@@ -187,7 +194,7 @@ export class ContactDetailsT {
 @Entity('SettingsOptions')
 export class SettingsOptionsT {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
   @Column()
   siteTitle: string;
   @Column()
@@ -201,34 +208,34 @@ export class SettingsOptionsT {
   @Column()
   shippingClass: string;
 
-  @OneToOne(()=>AttachmentT,logo=>logo.id)
+  @OneToOne(() => AttachmentT, (logo) => logo.id)
   @JoinColumn()
   logo: AttachmentT;
 
-  @OneToOne(()=>SeoSettingsT,seo=>seo.id)
+  @OneToOne(() => SeoSettingsT, (seo) => seo.id)
   @JoinColumn()
   seo: SeoSettingsT;
 
-  @OneToOne(()=>GoogleSettingsT,google=>google.id)
+  @OneToOne(() => GoogleSettingsT, (google) => google.id)
   @JoinColumn()
   google?: GoogleSettingsT;
 
-  @OneToOne(()=>FacebookSettingsT,facebook=>facebook.id)
+  @OneToOne(() => FacebookSettingsT, (facebook) => facebook.id)
   @JoinColumn()
   facebook?: FacebookSettingsT;
 
-  @OneToOne(()=>AttachmentT,contactDetails=>contactDetails.id)
+  @OneToOne(() => AttachmentT, (contactDetails) => contactDetails.id)
   @JoinColumn()
   contactDetails: ContactDetails;
 
-  @OneToMany(()=>DeliveryTimeT,deliveryTime=>deliveryTime.id)
+  @OneToMany(() => DeliveryTimeT, (deliveryTime) => deliveryTime.id)
   @JoinColumn()
   deliveryTime: DeliveryTimeT[];
 }
 
 @Entity('Setting')
 export class SettingT extends CoreEntityT {
-  @OneToOne(()=>SettingsOptionsT,type=>type.id)
+  @OneToOne(() => SettingsOptionsT, (type) => type.id)
   @JoinColumn()
   options: SettingsOptionsT;
 }

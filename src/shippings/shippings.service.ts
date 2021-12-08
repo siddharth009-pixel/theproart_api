@@ -9,54 +9,50 @@ import { ShippingT } from './entities/shipping.entity';
 
 @Injectable()
 export class ShippingsService {
-
-  constructor(@InjectRepository(ShippingT)
-  private shippintRepository: Repository<ShippingT>) { }
+  constructor(
+    @InjectRepository(ShippingT)
+    private shippintRepository: Repository<ShippingT>,
+  ) {}
 
   async create(createShippingDto: CreateShippingDto) {
     return await this.shippintRepository.save(createShippingDto);
   }
 
-  getShippings({ }: GetShippingsDto) {
+  getShippings({}: GetShippingsDto) {
     const shippings = this.shippintRepository.find();
     return shippings;
   }
 
   async findOne(id: number) {
     const shipping = await this.shippintRepository.findOne(id);
-    if (shipping)
-      return this.shippintRepository.remove(shipping);
+    if (shipping) return this.shippintRepository.remove(shipping);
     else
       return {
-        "code": "400",
-        "message": "Shiping is not Present",
+        code: '400',
+        message: 'Shiping is not Present',
       };
   }
 
   async update(id: number, updateShippingDto: UpdateShippingDto) {
-
     Logger.log(id);
-    
+
     const shipping = await this.shippintRepository.findOne(id);
-    if (shipping)
-      return this.shippintRepository.update(id, updateShippingDto);
+    if (shipping) return this.shippintRepository.update(id, updateShippingDto);
     else
       return {
-        "code": "400",
-        "message": "Shiping is not Present",
+        code: '400',
+        message: 'Shiping is not Present',
       };
   }
 
   async remove(id: number) {
     const shipping = await this.shippintRepository.findOne(id);
-    Logger.log(shipping, 'Shipping')
-    if (shipping)
-      return this.shippintRepository.remove(shipping);
+    Logger.log(shipping, 'Shipping');
+    if (shipping) return this.shippintRepository.remove(shipping);
     else
       return {
-        "code": "400",
-        "message": "Shiping is not Present",
+        code: '400',
+        message: 'Shiping is not Present',
       };
-
   }
 }

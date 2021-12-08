@@ -11,7 +11,9 @@ import { Tag, TagT } from './entities/tag.entity';
 export class TagsService {
   private tags: Tag[] = [];
 
-  constructor(@InjectRepository(TagT)private tagsRepository:Repository<TagT>){}
+  constructor(
+    @InjectRepository(TagT) private tagsRepository: Repository<TagT>,
+  ) {}
 
   create(createTagDto: CreateTagDto) {
     return this.tagsRepository.save(createTagDto);
@@ -20,10 +22,8 @@ export class TagsService {
   async findAll({ page, limit }: GetTagsDto) {
     if (!page) page = 1;
     const url = `/tags?limit=${limit}`;
-    let count:number;
-    count=await this.tagsRepository.count();
-    let tagData: TagT[]
-    tagData=await this.tagsRepository.find()
+    const count = await this.tagsRepository.count();
+    const tagData = await this.tagsRepository.find();
     return {
       data: tagData,
       ...paginate(count, page, limit, count, url),
@@ -35,11 +35,11 @@ export class TagsService {
   }
 
   update(id: number, updateTagDto: UpdateTagDto) {
-    return this.tagsRepository.update(id,updateTagDto);
+    return this.tagsRepository.update(id, updateTagDto);
   }
 
   async remove(id: number) {
-    var tag=await this.tagsRepository.findOne(id);
-    return this.tagsRepository.delete(tag);;
+    const tag = await this.tagsRepository.findOne(id);
+    return this.tagsRepository.delete(tag);
   }
 }

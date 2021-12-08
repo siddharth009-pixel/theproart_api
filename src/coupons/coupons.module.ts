@@ -4,6 +4,6 @@ import { CouponsController } from './coupons.controller';
 
 @Module({
   controllers: [CouponsController],
-  providers: [CouponsService]
+  providers: [CouponsService],
 })
 export class CouponsModule {}
