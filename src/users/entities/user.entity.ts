@@ -1,3 +1,4 @@
+import { isEmpty } from 'class-validator';
 import { Address, AddressT } from 'src/addresses/entities/address.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { Order, OrderT } from 'src/orders/entities/order.entity';
@@ -6,6 +7,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   OneToMany,
   OneToOne,
@@ -24,7 +26,7 @@ export class User extends CoreEntity {
   address?: Address[];
   orders?: Order[];
 }
-@Entity()
+@Entity('Users')
 export class UserT extends CoreEntityT {
   @Column()
   name: string;
@@ -33,36 +35,32 @@ export class UserT extends CoreEntityT {
   email: string;
 
   @Column()
-  password?: string;
+  password: string;
+
+  @Column({ nullable: true })
+  shop_id: number;
 
   @Column()
-  shop_id?: number;
+  permission: string;
 
   @OneToOne(() => ProfileT, (profilet: ProfileT) => profilet.customer, {
     eager: true,
-    cascade: true,
   })
   @JoinColumn()
-  profile?: ProfileT;
+  profile: ProfileT;
 
   @Column({ default: true })
-  is_active?: boolean;
+  is_active: boolean;
 
-  @OneToMany(() => AddressT, (addresst: AddressT) => addresst.customer, {
-    eager: true,
-    cascade: true,
-  })
-  address?: AddressT[];
+  @OneToMany(() => AddressT, (addresst: AddressT) => addresst.customer, {})
+  address: AddressT[];
 
-  @OneToMany(() => OrderT, (ordert: OrderT) => ordert.customer, {
-    eager: true,
-    cascade: true,
-  })
-  orders?: OrderT[];
+  @OneToMany(() => OrderT, (ordert: OrderT) => ordert.customer, {})
+  orders: OrderT[];
 
   @ManyToMany(() => ShopT, (shop) => shop.staffs)
-  shops?: Shop[];
+  shops: ShopT[];
 
   @OneToOne(() => ShopT, (shop) => shop.owner)
-  managed_shop?: ShopT;
+  managed_shop: ShopT;
 }

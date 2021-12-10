@@ -59,7 +59,10 @@ export class OrderT extends CoreEntityT {
   @Column()
   customer_contact: string;
 
-  @ManyToOne(() => UserT, (usert: UserT) => usert.orders)
+  @ManyToOne(() => UserT, (usert: UserT) => usert.orders, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   customer: UserT;
 
   @Column()
@@ -84,7 +87,10 @@ export class OrderT extends CoreEntityT {
   })
   payment_gateway: PaymentGatewayType;
 
-  @ManyToOne(() => CouponT, (coupent: CouponT) => coupent.orders)
+  @ManyToOne(() => CouponT, (coupent: CouponT) => coupent.orders, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   coupon?: CouponT;
 
   @Column()

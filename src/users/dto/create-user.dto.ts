@@ -14,7 +14,7 @@ export class CreateUserDto extends PickType(User, [
   'email',
   'password',
 ]) {
-  address: CreateAddressDto[];
-  profile: CreateProfileDto;
+  address?: CreateAddressDto[];
+  profile?: CreateProfileDto;
   permission: Permission = Permission.CUSTOMER;
 }

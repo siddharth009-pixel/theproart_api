@@ -154,6 +154,7 @@ export class ShopT extends CoreEntityT {
   balance?: Balance;
 
   @OneToOne(() => UserT, (owner) => owner.shop_id)
+  @JoinColumn()
   owner: UserT;
 
   @ManyToMany(() => UserT, (staffs) => staffs.shops)

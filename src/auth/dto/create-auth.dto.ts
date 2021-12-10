@@ -1,6 +1,6 @@
 import { PartialType, PickType } from '@nestjs/swagger';
 import { CoreMutationOutput } from 'src/common/dto/core-mutation-output.dto';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserT } from 'src/users/entities/user.entity';
 
 enum Permission {
   SUPER_ADMIN = 'Super admin',
@@ -8,7 +8,11 @@ enum Permission {
   STAFF = 'Staff',
   CUSTOMER = 'Customer',
 }
-export class RegisterDto extends PickType(User, ['name', 'email', 'password']) {
+export class RegisterDto extends PickType(UserT, [
+  'name',
+  'email',
+  'password',
+]) {
   permission: Permission = Permission.CUSTOMER;
 }
 

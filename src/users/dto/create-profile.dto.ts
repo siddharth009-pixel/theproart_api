@@ -1,14 +1,13 @@
 import { PickType } from '@nestjs/swagger';
-import { Profile } from '../entities/profile.entity';
+import { Profile, ProfileT } from '../entities/profile.entity';
 
-export class CreateProfileDto extends PickType(Profile, [
+export class CreateProfileDto extends PickType(ProfileT, [
   'avatar',
   'bio',
   'socials',
   'contact',
-]) {
-  customer: ConnectBelongsTo;
-}
+  'customer',
+]) {}
 
 export class ConnectBelongsTo {
   connect: number;

@@ -69,6 +69,9 @@ export class AddressT extends CoreEntityT {
   })
   type: AddressType;
 
-  @ManyToOne(() => UserT, (customer) => customer.address)
+  @ManyToOne(() => UserT, (customer) => customer.address, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   customer: UserT;
 }

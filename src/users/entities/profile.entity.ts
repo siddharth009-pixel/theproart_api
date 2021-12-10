@@ -4,6 +4,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -23,36 +24,36 @@ export class Social {
   link: string;
 }
 
-@Entity()
+@Entity('Profile')
 export class ProfileT extends CoreEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @OneToOne(() => AttachmentT, (attachmentt: AttachmentT) => attachmentt.id, {
     eager: true,
-    cascade: true,
+    nullable: true,
   })
   @JoinColumn()
   avatar?: AttachmentT;
 
-  @Column()
-  bio?: string;
+  @Column({ nullable: true })
+  bio: string;
 
-  @Column()
-  contact?: string;
+  @Column({ nullable: true })
+  contact: string;
 
-  @OneToOne(() => UserT, (usert: UserT) => usert.profile)
-  customer?: UserT;
-
-  @OneToMany(() => SocialT, (socialid: SocialT) => socialid.id, {
+  @OneToOne(() => UserT, (usert: UserT) => usert.profile, {
     cascade: true,
-    eager: true,
   })
-  @JoinColumn()
-  socials?: SocialT[];
+  customer: UserT;
+
+  @OneToMany(() => SocialT, (socialid: SocialT) => socialid.profile, {
+    nullable: true,
+  })
+  socials: SocialT[];
 }
 
-@Entity()
+@Entity('ProfileSocial')
 export class SocialT {
   @PrimaryGeneratedColumn()
   id: number;
@@ -60,4 +61,6 @@ export class SocialT {
   type: string;
   @Column()
   link: string;
+  @ManyToOne(() => ProfileT, (customer) => customer.socials)
+  profile: ProfileT;
 }

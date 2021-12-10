@@ -16,34 +16,43 @@ import {
 } from './dto/create-auth.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { plainToClass } from 'class-transformer';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserT } from 'src/users/entities/user.entity';
 import usersJson from 'src/users/users.json';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 const users = plainToClass(User, usersJson);
 
 @Injectable()
 export class AuthService {
   private users: User[] = users;
+  constructor(
+    @InjectRepository(UserT) private userRepository: Repository<UserT>,
+  ) {}
   async register(createUserInput: RegisterDto): Promise<AuthResponse> {
-    const user: User = {
-      id: uuidv4(),
-      ...users[0],
+    const newPost = this.userRepository.create({
       ...createUserInput,
       created_at: new Date(),
       updated_at: new Date(),
-    };
-
-    this.users.push(user);
+    });
+    this.userRepository.save(newPost);
     return {
       token: 'jwt token',
       permissions: ['super_admin', 'customer'],
     };
   }
-  async login(loginInput: LoginDto): Promise<AuthResponse> {
-    console.log(loginInput);
-    return {
-      token: 'jwt token',
-      permissions: ['super_admin', 'customer'],
-    };
+  async login(loginInput: LoginDto): Promise<AuthResponse | string> {
+    const user = await this.userRepository.findOne({
+      email: loginInput.email,
+      password: loginInput.password,
+    });
+    if (user) {
+      return {
+        token: 'jwt token',
+        permissions: ['super_admin', 'customer'],
+      };
+    } else {
+      return 'User Not found.';
+    }
   }
   async changePassword(
     changePasswordInput: ChangePasswordDto,
@@ -55,15 +64,25 @@ export class AuthService {
       message: 'Password change successful',
     };
   }
+
   async forgetPassword(
     forgetPasswordInput: ForgetPasswordDto,
   ): Promise<CoreResponse> {
     console.log(forgetPasswordInput);
-
-    return {
-      success: true,
-      message: 'Password change successful',
-    };
+    const user = await this.userRepository.findOne({
+      email: forgetPasswordInput.email,
+    });
+    if (user) {
+      return {
+        success: true,
+        message: 'Password Change Successfully.',
+      };
+    } else {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
   }
   async verifyForgetPasswordToken(
     verifyForgetPasswordTokenInput: VerifyForgetPasswordDto,
@@ -134,8 +153,11 @@ export class AuthService {
   // public getUser(getUserArgs: GetUserArgs): User {
   //   return this.users.find((user) => user.id === getUserArgs.id);
   // }
-  me(): User {
-    return this.users[0];
+  async me(): Promise<UserT> {
+    const user = await this.userRepository.findOne({
+      id: 1,
+    });
+    return user;
   }
 
   // updateUser(id: number, updateUserInput: UpdateUserInput) {
