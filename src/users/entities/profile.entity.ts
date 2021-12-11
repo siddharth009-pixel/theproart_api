@@ -1,4 +1,8 @@
-import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
+import {
+  Attachment,
+  AttachmentT,
+  ProfileAttachment,
+} from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import {
   Column,
@@ -29,12 +33,15 @@ export class ProfileT extends CoreEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => AttachmentT, (attachmentt: AttachmentT) => attachmentt.id, {
-    eager: true,
-    nullable: true,
-  })
-  @JoinColumn()
-  avatar?: AttachmentT;
+  @OneToOne(
+    () => ProfileAttachment,
+    (attachmentt: ProfileAttachment) => attachmentt.profile,
+    {
+      eager: true,
+      nullable: true,
+    },
+  )
+  avatar: ProfileAttachment;
 
   @Column({ nullable: true })
   bio: string;

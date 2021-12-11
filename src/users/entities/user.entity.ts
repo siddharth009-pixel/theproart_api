@@ -26,7 +26,7 @@ export class User extends CoreEntity {
   address?: Address[];
   orders?: Order[];
 }
-@Entity('Users')
+@Entity('users')
 export class UserT extends CoreEntityT {
   @Column()
   name: string;

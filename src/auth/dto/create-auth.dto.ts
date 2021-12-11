@@ -2,7 +2,7 @@ import { PartialType, PickType } from '@nestjs/swagger';
 import { CoreMutationOutput } from 'src/common/dto/core-mutation-output.dto';
 import { User, UserT } from 'src/users/entities/user.entity';
 
-enum Permission {
+export enum Permission {
   SUPER_ADMIN = 'Super admin',
   STORE_OWNER = 'Store owner',
   STAFF = 'Staff',

@@ -19,7 +19,7 @@ import { AddressesModule } from './addresses/addresses.module';
 import { ImportsModule } from './imports/imports.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Connection, getConnectionOptions } from 'typeorm';
+import { getConnectionOptions } from 'typeorm';
 @Module({
   imports: [
     UsersModule,

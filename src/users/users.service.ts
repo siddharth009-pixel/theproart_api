@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { CreateUserDto } from './dto/create-user.dto';
-import { GetUsersDto, UserPaginator } from './dto/get-users.dto';
+import { GetUsersDto, UserPaginatorU } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import Fuse from 'fuse.js';
 
@@ -9,17 +9,19 @@ import { User, UserT } from './entities/user.entity';
 import usersJson from './users.json';
 import { paginate } from 'src/common/pagination/paginate';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getRepository, Repository, Connection, getConnection } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { AddressT, UserAddressT } from 'src/addresses/entities/address.entity';
 import { ProfileT, SocialT } from './entities/profile.entity';
-import { AttachmentT } from 'src/common/entities/attachment.entity';
+import {
+  AttachmentT,
+  ProfileAttachment,
+} from 'src/common/entities/attachment.entity';
 const users = plainToClass(User, usersJson);
 
 const options = {
   keys: ['name', 'type.slug', 'categories.slug', 'status'],
   threshold: 0.3,
 };
-const fuse = new Fuse(users, options);
 @Injectable()
 export class UsersService {
   private users: User[] = users;
@@ -29,7 +31,7 @@ export class UsersService {
   userAddressRepositry = getRepository(UserAddressT);
   addessRepositry = getRepository(AddressT);
   profileRepositry = getRepository(ProfileT);
-  attachmenttRepositry = getRepository(AttachmentT);
+  attachmenttRepositry = getRepository(ProfileAttachment);
 
   create(createUserDto: CreateUserDto) {
     const user = new UserT();
@@ -65,7 +67,6 @@ export class UsersService {
       avatar.thumbnail = profileBody.avatar.thumbnail;
       this.attachmenttRepositry.save(avatar);
 
-      profile.avatar = avatar;
       profile.bio = profileBody.bio;
       profile.contact = profileBody.contact;
 
@@ -80,13 +81,14 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async getUsers({ text, limit, page }: GetUsersDto): Promise<UserPaginator> {
+  async getUsers({ text, limit, page }: GetUsersDto): Promise<UserPaginatorU> {
     if (!page) page = 1;
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    let data: User[] = this.users;
+    let data: UserT[] = await this.userRepository.find();
     if (text?.replace(/%/g, '')) {
+      const fuse = new Fuse(data, options);
       data = fuse.search(text)?.map(({ item }) => item);
     }
     const results = data.slice(startIndex, endIndex);
@@ -98,36 +100,59 @@ export class UsersService {
     };
   }
   findOne(id: number) {
-    return this.users.find((user) => user.id === id);
+    return this.userRepository.findOne(id);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOne(id);
-    const profile = await this.profileRepositry.findOne({ customer: user });
-    if (!profile) {
-      getRepository(ProfileT)
-        .createQueryBuilder()
-        .insert()
-        .into(ProfileT)
-        .values({
-          customer: user,
+    user.name = updateUserDto?.name;
+    if (user['profile'] == undefined || user['profile'] == null) {
+      let avatar, profilen;
+      if (Object.keys(updateUserDto?.profile?.avatar).length == 0) {
+        delete updateUserDto.profile.avatar;
+        profilen = await this.profileRepositry.save({
           ...updateUserDto.profile,
-        })
-        .execute();
-      return `Profile Updated Successfully`;
+        });
+      } else {
+        delete updateUserDto?.profile?.avatar?.id;
+        avatar = await this.attachmenttRepositry.save({
+          ...updateUserDto.profile.avatar,
+          created_at: new Date(),
+        });
+        profilen = await this.profileRepositry.save({
+          ...updateUserDto.profile,
+          avatar: avatar,
+        });
+      }
+      user.profile = profilen;
+      this.userRepository.save(user);
+      return user;
     } else {
-      getRepository(ProfileT)
-        .createQueryBuilder()
-        .update(ProfileT)
-        .set({
-          ...updateUserDto.profile,
-        })
-        .where('customerId = :customerId', { customerId: id })
-        .execute();
-      return `Profile Updated Successfully`;
+      let avatar;
+      const profile = await this.profileRepositry.findOne({
+        id: user.profile.id,
+      });
+      profile.bio = updateUserDto?.profile?.bio;
+      profile.contact = updateUserDto?.profile?.contact;
+      if (profile['avatar'] == undefined || profile['avatar'] == null) {
+        if (updateUserDto?.profile?.avatar?.original) {
+          avatar = await this.attachmenttRepositry.save({
+            ...updateUserDto.profile.avatar,
+            created_at: new Date(),
+          });
+          profile.avatar = avatar;
+        }
+      } else {
+        if (updateUserDto?.profile?.avatar?.original) {
+          profile.avatar.original = updateUserDto?.profile?.avatar?.original;
+          profile.avatar.thumbnail = updateUserDto?.profile?.avatar?.thumbnail;
+        }
+      }
+      this.profileRepositry.save(profile);
+      return user;
     }
   }
-  remove(id: number) {
+  async remove(id: number) {
     return `This action removes a #${id} user`;
   }
 }

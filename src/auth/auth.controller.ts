@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ChangePasswordDto,
   ForgetPasswordDto,
@@ -52,8 +53,12 @@ export class AuthController {
     return this.authService.resetPassword(resetPasswordDto);
   }
   @Post('change-password')
-  changePassword(@Body() changePasswordDto: ChangePasswordDto) {
-    return this.authService.changePassword(changePasswordDto);
+  @UseGuards(AuthGuard())
+  changePassword(@Body() changePasswordDto: ChangePasswordDto, @Req() req) {
+    return this.authService.changePassword(
+      changePasswordDto,
+      req?.user?.payload?.id,
+    );
   }
   @Post('logout')
   async logout(): Promise<boolean> {
@@ -67,7 +72,9 @@ export class AuthController {
   }
 
   @Get('me')
-  me() {
-    return this.authService.me();
+  @UseGuards(AuthGuard())
+  me(@Req() req) {
+    const id = req.user.payload.id;
+    return this.authService.me(id);
   }
 }

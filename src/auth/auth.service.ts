@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   AuthResponse,
   ChangePasswordDto,
@@ -13,13 +18,15 @@ import {
   OtpResponse,
   VerifyOtpDto,
   OtpDto,
+  Permission,
 } from './dto/create-auth.dto';
-import { v4 as uuidv4 } from 'uuid';
+import { JwtService } from '@nestjs/jwt';
 import { plainToClass } from 'class-transformer';
 import { User, UserT } from 'src/users/entities/user.entity';
 import usersJson from 'src/users/users.json';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { decrypt, encrypt } from 'src/common/cryproencdes';
 const users = plainToClass(User, usersJson);
 
 @Injectable()
@@ -27,42 +34,78 @@ export class AuthService {
   private users: User[] = users;
   constructor(
     @InjectRepository(UserT) private userRepository: Repository<UserT>,
+    private jwtService: JwtService,
   ) {}
   async register(createUserInput: RegisterDto): Promise<AuthResponse> {
+    if (!createUserInput.permission) {
+      createUserInput.permission = Permission.CUSTOMER;
+    }
+    console.log(createUserInput);
+    createUserInput.password = encrypt(createUserInput.password);
     const newPost = this.userRepository.create({
       ...createUserInput,
       created_at: new Date(),
       updated_at: new Date(),
     });
-    this.userRepository.save(newPost);
-    return {
-      token: 'jwt token',
-      permissions: ['super_admin', 'customer'],
-    };
+    try {
+      const user = await this.userRepository.save(newPost);
+      const { id } = user;
+      const payload = { id };
+      const asscesstoken = this.jwtService.sign({ payload });
+      return {
+        token: asscesstoken,
+        permissions: ['super_admin', 'customer'],
+      };
+    } catch (error) {
+      return error;
+    }
   }
   async login(loginInput: LoginDto): Promise<AuthResponse | string> {
     const user = await this.userRepository.findOne({
       email: loginInput.email,
-      password: loginInput.password,
     });
     if (user) {
-      return {
-        token: 'jwt token',
-        permissions: ['super_admin', 'customer'],
-      };
+      if (decrypt(user.password) == loginInput.password) {
+        const { id } = user;
+        const payload = { id };
+        const asscesstoken = this.jwtService.sign({ payload });
+        return {
+          token: asscesstoken,
+          permissions: ['super_admin', 'customer'],
+        };
+      } else {
+        throw new UnauthorizedException('Enter Valid Password.');
+      }
     } else {
-      return 'User Not found.';
+      throw new NotFoundException('User Not found');
     }
   }
   async changePassword(
     changePasswordInput: ChangePasswordDto,
+    id: number,
   ): Promise<CoreResponse> {
     console.log(changePasswordInput);
-
-    return {
-      success: true,
-      message: 'Password change successful',
-    };
+    if (changePasswordInput.newPassword == changePasswordInput.oldPassword) {
+      throw new BadRequestException('Please Enter Diffrent Password');
+    }
+    if (id) {
+      const user = await this.userRepository.findOne({ id });
+      if (user) {
+        if (decrypt(user.password) == changePasswordInput.oldPassword) {
+          const passwordnew = encrypt(changePasswordInput.newPassword);
+          user.password = passwordnew;
+          await this.userRepository.save(user);
+          return {
+            success: true,
+            message: 'Password change successful',
+          };
+        } else {
+          throw new UnauthorizedException('Enter Valid Old Password.');
+        }
+      } else {
+        throw new NotFoundException('User Not found');
+      }
+    }
   }
 
   async forgetPassword(
@@ -153,10 +196,8 @@ export class AuthService {
   // public getUser(getUserArgs: GetUserArgs): User {
   //   return this.users.find((user) => user.id === getUserArgs.id);
   // }
-  async me(): Promise<UserT> {
-    const user = await this.userRepository.findOne({
-      id: 1,
-    });
+  async me(id: number): Promise<UserT> {
+    const user = await this.userRepository.findOne({ id });
     return user;
   }
 
