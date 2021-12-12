@@ -1,6 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { plainToClass } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { CreateShippingDto } from './dto/create-shipping.dto';
 import { GetShippingsDto } from './dto/get-shippings.dto';
@@ -25,34 +24,23 @@ export class ShippingsService {
 
   async findOne(id: number) {
     const shipping = await this.shippintRepository.findOne(id);
-    if (shipping) return this.shippintRepository.remove(shipping);
-    else
-      return {
-        code: '400',
-        message: 'Shiping is not Present',
-      };
+    return shipping;
   }
 
   async update(id: number, updateShippingDto: UpdateShippingDto) {
-    Logger.log(id);
-
+    console.log(updateShippingDto);
+    console.log(id);
+    if (typeof id != 'number') {
+      return;
+    }
     const shipping = await this.shippintRepository.findOne(id);
     if (shipping) return this.shippintRepository.update(id, updateShippingDto);
-    else
-      return {
-        code: '400',
-        message: 'Shiping is not Present',
-      };
   }
 
   async remove(id: number) {
+    console.log(id);
+    console.log('remove');
     const shipping = await this.shippintRepository.findOne(id);
-    Logger.log(shipping, 'Shipping');
     if (shipping) return this.shippintRepository.remove(shipping);
-    else
-      return {
-        code: '400',
-        message: 'Shiping is not Present',
-      };
   }
 }

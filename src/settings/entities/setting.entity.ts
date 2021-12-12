@@ -1,7 +1,7 @@
 import { AttributeT } from 'src/attributes/entities/attribute.entity';
 import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
-import { ShopSettingsT } from 'src/shops/entities/shop.entity';
+import { ShopSettingsT } from 'src/common/entities/shopsetting.entity';
 import {
   Column,
   Entity,
@@ -145,8 +145,8 @@ export class ShopSocialsT {
   icon: string;
   @Column()
   url: string;
-  @ManyToOne(() => ShopSettingsT, (sst) => sst.socials)
-  key: ShopSocialsT;
+  // @ManyToOne(() => ShopSettingsT, (sst) => sst.socials)
+  // shop: ShopSettingsT;
 }
 
 @Entity('LocationT')

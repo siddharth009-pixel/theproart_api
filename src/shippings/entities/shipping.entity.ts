@@ -14,10 +14,8 @@ export enum ShippingType {
   FREE = 'free',
 }
 
-@Entity('Shipping')
+@Entity('shipping')
 export class ShippingT extends CoreEntityT {
-  @PrimaryGeneratedColumn()
-  id: number;
   @Column()
   name: string;
   @Column()

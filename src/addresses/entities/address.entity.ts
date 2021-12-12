@@ -1,7 +1,7 @@
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
+import { ShopT } from 'src/shops/entities/shop.entity';
 import { User, UserT } from 'src/users/entities/user.entity';
 import {
-  Check,
   Column,
   Entity,
   JoinColumn,
@@ -45,6 +45,26 @@ export class UserAddressT {
   state: string;
   @Column()
   zip: string;
+}
+@Entity('shopaddress')
+export class ShopAddress {
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column()
+  street_address: string;
+  @Column()
+  country: string;
+  @Column()
+  city: string;
+  @Column()
+  state: string;
+  @Column()
+  zip: string;
+  @OneToOne(() => ShopT, (shop: ShopT) => shop.address, {
+    cascade: true,
+  })
+  @JoinColumn()
+  shop: ShopT;
 }
 
 @Entity('Address')

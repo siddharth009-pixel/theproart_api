@@ -1,27 +1,18 @@
 import {
+  ShopAddress,
   UserAddress,
-  UserAddressT,
 } from 'src/addresses/entities/address.entity';
-import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
+import {
+  Attachment,
+  shop_cover,
+  shop_logos,
+} from 'src/common/entities/attachment.entity';
+import { BalanceT } from 'src/common/entities/balance.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
-import {
-  Location,
-  LocationT,
-  ShopSocials,
-  ShopSocialsT,
-} from 'src/settings/entities/setting.entity';
+import { ShopSettingsT } from 'src/common/entities/shopsetting.entity';
+import { Location, ShopSocials } from 'src/settings/entities/setting.entity';
 import { User, UserT } from 'src/users/entities/user.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, OneToOne } from 'typeorm';
 
 export class Balance {
   id: number;
@@ -64,116 +55,74 @@ export class Shop extends CoreEntity {
   settings?: ShopSettings;
 }
 
-@Entity('PaymentInfo')
-export class PaymentInfoT {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  account: string;
-  @Column()
-  name: string;
-  @Column()
-  email: string;
-  @Column()
-  bank: string;
-}
-
-@Entity('ShopSettings')
-export class ShopSettingsT {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @OneToMany(() => ShopSocialsT, (socials) => socials.id)
-  @JoinColumn()
-  socials: ShopSocialsT[];
-
-  @Column()
-  contact: string;
-
-  @OneToOne(() => LocationT, (location) => location.id)
-  @JoinColumn()
-  location: Location;
-
-  @Column()
-  website: string;
-}
-
-@Entity('Balance')
-export class BalanceT {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  admin_commission_rate: number;
-
-  // @OneToOne(()=>ShopT,st=>st.balance)
-  // shop: ShopT;
-
-  @Column()
-  total_earnings: number;
-
-  @Column()
-  withdrawn_amount: number;
-
-  @Column()
-  current_balance: number;
-
-  @OneToOne(() => PaymentInfoT, (payment_info) => payment_info.id)
-  @JoinColumn()
-  payment_info: PaymentInfoT;
-}
-
 @Entity('Shop')
 export class ShopT extends CoreEntityT {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  owner_id: number;
-
-  @Column()
+  @Column({ default: true })
   is_active: boolean;
 
-  @Column()
+  @Column({ default: 0 })
   orders_count: number;
 
-  @Column()
+  @Column({
+    nullable: true,
+    default: 1,
+  })
+  owner_id: number;
+  @Column({ default: 0 })
   products_count: number;
 
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   slug: string;
 
-  @Column()
-  description?: string;
+  @Column({ nullable: true })
+  description: string;
 
-  @OneToOne(() => BalanceT, (balnace) => balnace.id)
-  @JoinColumn()
-  balance?: Balance;
-
-  @OneToOne(() => UserT, (owner) => owner.shop_id)
+  @OneToOne(() => UserT, (owner) => owner.shop_id, {
+    cascade: true,
+    eager: true,
+  })
   @JoinColumn()
   owner: UserT;
 
-  @ManyToMany(() => UserT, (staffs) => staffs.shops)
-  @JoinTable()
-  staffs?: UserT[];
+  @ManyToMany(() => UserT, (staffs) => staffs.shops, {
+    nullable: true,
+  })
+  staffs: UserT[];
 
-  @OneToOne(() => AttachmentT, (photo) => photo.id)
-  @JoinColumn()
-  cover_image: AttachmentT;
+  @OneToOne(() => shop_cover, (photo: shop_cover) => photo.shop_cover, {
+    eager: true,
+    nullable: true,
+  })
+  cover_image: shop_cover;
 
-  @OneToOne(() => AttachmentT, (logo) => logo.id)
-  @JoinColumn()
-  logo?: AttachmentT;
+  @OneToOne(() => shop_logos, (logo: shop_logos) => logo.shop_logo, {
+    eager: true,
+    nullable: true,
+  })
+  logo: shop_logos;
 
-  @OneToOne(() => UserAddressT, (useaddress) => useaddress.id)
-  @JoinColumn()
-  address: UserAddressT;
+  @OneToOne(
+    () => ShopAddress,
+    (shop_address: ShopAddress) => shop_address.shop,
+    {
+      eager: true,
+      nullable: true,
+    },
+  )
+  address: ShopAddress;
 
-  @OneToOne(() => ShopSettingsT, (settings) => settings.id)
-  @JoinColumn()
-  settings?: ShopSettingsT;
+  @OneToOne(() => BalanceT, (balnace) => balnace.shop, {
+    eager: true,
+    nullable: true,
+  })
+  balance: BalanceT;
+
+  @OneToOne(() => ShopSettingsT, (settings) => settings.shop, {
+    eager: true,
+    nullable: true,
+  })
+  settings: ShopSettingsT;
 }

@@ -1,4 +1,3 @@
-import { isEmpty } from 'class-validator';
 import { Address, AddressT } from 'src/addresses/entities/address.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { Order, OrderT } from 'src/orders/entities/order.entity';
@@ -7,7 +6,6 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToMany,
   OneToMany,
   OneToOne,

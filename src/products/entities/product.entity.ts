@@ -12,10 +12,7 @@ import { Type, TypeT } from 'src/types/entities/type.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
-  JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -126,7 +123,6 @@ export class VariationT {
   @Column()
   quantity: number;
   @OneToMany(() => VariationOptionT, (vo) => vo.id)
-  @JoinColumn()
   options: VariationOptionT[];
 }
 
@@ -187,11 +183,9 @@ export class ProductT extends CoreEntityT {
   status: ProductStatus;
 
   @ManyToMany(() => CategoryT, (cate) => cate.products)
-  @JoinTable()
   categories: CategoryT[];
 
   @ManyToMany(() => TagT, (tagt) => tagt.products)
-  @JoinTable()
   tags?: TagT[];
 
   @OneToMany(() => AttributeValueT, (att) => att.id)
@@ -207,11 +201,9 @@ export class ProductT extends CoreEntityT {
   orders?: OrderT[];
 
   @OneToMany(() => AttachmentT, (att) => att.id)
-  @JoinColumn()
   gallery?: AttachmentT[];
 
   @OneToOne(() => AttachmentT, (att) => att.id)
-  @JoinColumn()
   image?: AttachmentT;
 
   // shop: Shop;

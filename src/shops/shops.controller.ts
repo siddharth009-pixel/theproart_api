@@ -7,28 +7,36 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ShopsService } from './shops.service';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
-import { GetShopsDto, ShopPaginator } from './dto/get-shops.dto';
+import { GetShopsDto, ShopPaginatorT } from './dto/get-shops.dto';
 import { GetStaffsDto } from './dto/get-staffs.dto';
 import { UserPaginator } from 'src/users/dto/get-users.dto';
 import { ApiTags } from '@nestjs/swagger';
-
+import { AuthGuard } from '@nestjs/passport';
 @Controller('shops')
 @ApiTags('Shops')
 export class ShopsController {
   constructor(private readonly shopsService: ShopsService) {}
 
   @Post()
-  create(@Body() createShopDto: CreateShopDto) {
-    return this.shopsService.create(createShopDto);
+  @UseGuards(AuthGuard())
+  create(@Body() createShopDto: CreateShopDto, @Req() req) {
+    console.log(req.user.payload.id);
+    return this.shopsService.create(createShopDto, req.user.payload.id);
   }
 
   @Get()
-  async getShops(@Query() query: GetShopsDto): Promise<ShopPaginator> {
-    return this.shopsService.getShops(query);
+  @UseGuards(AuthGuard())
+  async getShops(
+    @Query() query: GetShopsDto,
+    @Req() req,
+  ): Promise<ShopPaginatorT> {
+    return this.shopsService.getShops(query, req.user.payload.id);
   }
 
   @Get(':slug')
@@ -61,7 +69,7 @@ export class StaffsController {
 
   @Post()
   create(@Body() createShopDto: CreateShopDto) {
-    return this.shopsService.create(createShopDto);
+    return this.shopsService.create(createShopDto, 1);
   }
 
   @Get()
