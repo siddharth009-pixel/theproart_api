@@ -12,7 +12,7 @@ export class Tax extends CoreEntity {
   priority?: number;
   on_shipping: boolean;
 }
-@Entity('Tax')
+@Entity('tax')
 export class TaxT extends CoreEntityT {
   @PrimaryGeneratedColumn()
   id: number;
@@ -20,18 +20,18 @@ export class TaxT extends CoreEntityT {
   name: string;
   @Column()
   rate: number;
-  @Column()
+  @Column({ default: true })
   is_global: boolean;
-  @Column()
-  country?: string;
-  @Column()
-  state?: string;
-  @Column()
-  zip?: string;
-  @Column()
-  city?: string;
-  @Column()
-  priority?: number;
-  @Column()
+  @Column({ nullable: true })
+  country: string;
+  @Column({ nullable: true })
+  state: string;
+  @Column({ nullable: true })
+  zip: string;
+  @Column({ nullable: true })
+  city: string;
+  @Column({ nullable: true })
+  priority: number;
+  @Column({ default: true })
   on_shipping: boolean;
 }

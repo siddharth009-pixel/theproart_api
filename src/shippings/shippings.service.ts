@@ -29,7 +29,6 @@ export class ShippingsService {
 
   async update(id: number, updateShippingDto: UpdateShippingDto) {
     console.log(updateShippingDto);
-    console.log(id);
     if (typeof id != 'number') {
       return;
     }
@@ -38,8 +37,6 @@ export class ShippingsService {
   }
 
   async remove(id: number) {
-    console.log(id);
-    console.log('remove');
     const shipping = await this.shippintRepository.findOne(id);
     if (shipping) return this.shippintRepository.remove(shipping);
   }

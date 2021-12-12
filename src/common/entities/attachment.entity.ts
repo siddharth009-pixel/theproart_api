@@ -1,5 +1,6 @@
 import { toUnicode } from 'punycode';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
+import { CouponT } from 'src/coupons/entities/coupon.entity';
 import { ShopT } from 'src/shops/entities/shop.entity';
 import { ProfileT } from 'src/users/entities/profile.entity';
 import {
@@ -48,6 +49,16 @@ export class shop_cover extends AttachmentT {
   })
   @JoinColumn()
   shop_cover: ShopT;
+}
+
+@Entity('coupon_attachment')
+export class CouponAttachment extends AttachmentT {
+  @OneToOne(() => CouponT, (cou: CouponT) => cou.image, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  coupon_image: CouponT;
 }
 
 @Entity('PaymentInfo')

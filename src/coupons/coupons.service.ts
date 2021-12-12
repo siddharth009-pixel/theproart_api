@@ -1,34 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
-import { Coupon } from './entities/coupon.entity';
-import couponsJson from './coupons.json';
-import Fuse from 'fuse.js';
+import { CouponT } from './entities/coupon.entity';
 import { GetCouponsDto } from './dto/get-coupons.dto';
 import { paginate } from 'src/common/pagination/paginate';
-const coupons = plainToClass(Coupon, couponsJson);
-const options = {
-  keys: ['name'],
-  threshold: 0.3,
-};
-const fuse = new Fuse(coupons, options);
+import { InjectRepository } from '@nestjs/typeorm';
+import { getRepository, Repository } from 'typeorm';
+import { CouponAttachment } from 'src/common/entities/attachment.entity';
+
 @Injectable()
 export class CouponsService {
-  private coupons: Coupon[] = coupons;
-  create(createCouponDto: CreateCouponDto) {
-    return this.coupons[0];
+  constructor(
+    @InjectRepository(CouponT) private couponRepository: Repository<CouponT>,
+  ) {}
+
+  couponAttechmantRepository = getRepository(CouponAttachment);
+  async create(createCouponDto: CreateCouponDto) {
+    const coupne = new CouponT();
+    let coupnei;
+    if (createCouponDto?.image) {
+      delete createCouponDto?.image.id;
+      coupnei = await this.couponAttechmantRepository.save({
+        ...createCouponDto.image,
+      });
+      coupne.image = coupnei;
+    }
+    coupne.code = createCouponDto?.code;
+    coupne.description = createCouponDto?.description;
+    coupne.expire_at = createCouponDto?.expire_at;
+    coupne.active_from = createCouponDto?.active_from;
+    coupne.amount = createCouponDto?.amount;
+    await this.couponRepository.save(coupne);
+    return coupne;
   }
 
-  getCoupons({ search, limit, page }: GetCouponsDto) {
+  async getCoupons({ search, limit, page }: GetCouponsDto) {
     if (!page) page = 1;
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const data: Coupon[] = this.coupons;
-    // if (text?.replace(/%/g, '')) {
-    //   data = fuse.search(text)?.map(({ item }) => item);
-    // }
+    const data: CouponT[] = await this.couponRepository.find();
 
     const results = data.slice(startIndex, endIndex);
     const url = `/coupons?search=${search}&limit=${limit}`;
@@ -38,15 +49,34 @@ export class CouponsService {
     };
   }
 
-  getCoupon(id: number): Coupon {
-    return this.coupons.find((p) => p.id === id);
+  async getCoupon(id: number) {
+    const coupon = await this.couponRepository.findOne({ id: id });
+    console.log(coupon);
+    return coupon;
   }
 
-  update(id: number, updateCouponDto: UpdateCouponDto) {
-    return this.coupons[0];
+  async update(id: number, updateCouponDto: UpdateCouponDto) {
+    let coupne = await this.couponRepository.findOne({ id: id });
+    if (updateCouponDto?.image) {
+      delete updateCouponDto?.image.id;
+      await this.couponAttechmantRepository.update(
+        { coupon_image: coupne },
+        {
+          ...updateCouponDto.image,
+        },
+      );
+    }
+    coupne.code = updateCouponDto?.code;
+    coupne.description = updateCouponDto?.description;
+    coupne.expire_at = updateCouponDto?.expire_at;
+    coupne.active_from = updateCouponDto?.active_from;
+    coupne.amount = updateCouponDto?.amount;
+    coupne = await this.couponRepository.save(coupne);
+    return coupne;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} coupon`;
+  async remove(id: number) {
+    const coupne = await this.couponRepository.findOne({ id: id });
+    if (coupne) return this.couponRepository.remove(coupne);
   }
 }

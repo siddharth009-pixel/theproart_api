@@ -1,13 +1,11 @@
 import {
   Attachment,
-  AttachmentT,
   ProfileAttachment,
 } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
