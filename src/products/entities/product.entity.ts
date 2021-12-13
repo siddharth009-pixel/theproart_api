@@ -139,29 +139,40 @@ export class ProductT extends CoreEntityT {
 
   @Column()
   description: string;
+
   @Column()
   in_stock: boolean;
+
   @Column()
   is_taxable: boolean;
+
   @Column()
   sale_price?: number;
+
   @Column()
   max_price?: number;
+
   @Column()
   min_price?: number;
+
   @Column()
   sku?: string;
 
   @Column()
   height?: string;
+
   @Column()
   length?: string;
+
   @Column()
   width?: string;
+
   @Column()
   price?: number;
+
   @Column()
   quantity: number;
+
   @Column()
   unit: string;
 
@@ -186,7 +197,7 @@ export class ProductT extends CoreEntityT {
   categories: CategoryT[];
 
   @ManyToMany(() => TagT, (tagt) => tagt.products)
-  tags?: TagT[];
+  tags: TagT[];
 
   @OneToMany(() => AttributeValueT, (att) => att.id)
   variations?: AttributeValueT[];

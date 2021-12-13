@@ -16,6 +16,8 @@ export class TagsService {
   ) {}
 
   create(createTagDto: CreateTagDto) {
+    console.log(createTagDto);
+    return;
     return this.tagsRepository.save(createTagDto);
   }
 

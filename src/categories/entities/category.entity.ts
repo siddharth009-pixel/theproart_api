@@ -1,4 +1,8 @@
-import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
+import {
+  Attachment,
+  AttachmentT,
+  CategoriAttachment,
+} from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { Product, ProductT } from 'src/products/entities/product.entity';
 import { Type, TypeT } from 'src/types/entities/type.entity';
@@ -33,24 +37,27 @@ export class CategoryT extends CoreEntityT {
   @Column()
   slug: string;
 
-  @Column()
-  details?: string;
+  @Column({ nullable: true })
+  details: string;
 
-  @Column()
+  @Column({ nullable: true })
   icon?: string;
 
   @OneToOne(() => TypeT, (typet) => typet.id)
   type?: TypeT;
 
-  @ManyToOne((type) => CategoryT, (category) => category.children)
+  @ManyToOne(() => CategoryT, (category) => category.children)
   parent: CategoryT;
 
-  @OneToMany((type) => CategoryT, (category) => category.parent)
+  @OneToMany(() => CategoryT, (category) => category.parent)
   children: CategoryT[];
 
   @ManyToMany(() => ProductT, (p) => p.categories)
   products: ProductT[];
 
-  @OneToOne(() => AttachmentT, (attch) => attch.id)
-  image?: AttachmentT;
+  @OneToOne(() => CategoriAttachment, (attch) => attch.categories_logo, {
+    eager: true,
+    nullable: true,
+  })
+  image: CategoriAttachment;
 }

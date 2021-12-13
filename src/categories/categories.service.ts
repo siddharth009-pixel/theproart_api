@@ -19,6 +19,7 @@ export class CategoriesService {
   private categories: Category[] = categories;
 
   create(createCategoryDto: CreateCategoryDto) {
+    console.log(createCategoryDto);
     return this.categories[0];
   }
 
