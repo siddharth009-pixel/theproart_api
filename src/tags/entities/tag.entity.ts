@@ -4,8 +4,8 @@ import {
 } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { Product, ProductT } from 'src/products/entities/product.entity';
-import { Type } from 'src/types/entities/type.entity';
-import { Column, Entity, ManyToMany, OneToOne } from 'typeorm';
+import { Type, TypeT } from 'src/types/entities/type.entity';
+import { Column, Entity, JoinColumn, ManyToMany, OneToOne } from 'typeorm';
 
 export class Tag extends CoreEntity {
   name: string;
@@ -26,7 +26,7 @@ export class TagT extends CoreEntityT {
   @Column()
   slug: string;
 
-  @Column()
+  @Column({ default: 0 })
   parent: number;
 
   @Column()
@@ -35,15 +35,23 @@ export class TagT extends CoreEntityT {
   @OneToOne(() => TagAttachment, (attch) => attch.tag, {
     eager: true,
     nullable: true,
+    onDelete: 'NO ACTION',
   })
   image: TagAttachment;
 
   @Column()
   icon: string;
 
-  // @OneToOne(() => TypeT, { eager: true })
-  // type: TypeT;
+  @OneToOne(() => TypeT, (type) => type.tag, {
+    nullable: true,
+    cascade: true,
+    onDelete: 'NO ACTION',
+  })
+  @JoinColumn()
+  type: TypeT;
 
-  @ManyToMany(() => ProductT, (product) => product.tags)
+  @ManyToMany(() => ProductT, (product) => product.tags, {
+    nullable: true,
+  })
   products: ProductT[];
 }

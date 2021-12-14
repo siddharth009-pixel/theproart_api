@@ -109,12 +109,9 @@ export class CouponAttachment extends AttachmentT {
 
 @Entity('categoriattachment')
 export class CategoriAttachment extends AttachmentT {
-  @OneToOne(() => CategoryT, (shop: CategoryT) => shop.image, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(() => CategoryT, (cat: CategoryT) => cat.image, {})
   @JoinColumn()
-  categories_logo: CategoryT;
+  logo: CategoryT;
 }
 
 @Entity('PaymentInfo')

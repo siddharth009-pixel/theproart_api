@@ -53,6 +53,7 @@ export class TypesService {
     type.name = createTypeDto?.name;
     type.icon = createTypeDto?.icon;
     type.slug = createTypeDto?.name + 'slug';
+
     //saving into setting repository
     if (createTypeDto?.settings) {
       const setting = await this.settingRepository.save({
@@ -60,29 +61,38 @@ export class TypesService {
       });
       type.settings = setting;
     }
+    await this.typeRepository.save(type);
     //save sliders
     if (createTypeDto?.promotional_sliders) {
       createTypeDto?.promotional_sliders.map(async (slide) => {
         delete slide.id;
-        const slideDatabasde = await this.promotionalSlidersRepository.save({
+        const slider = await this.promotionalSlidersRepository.save({
           ...slide,
         });
-        type.promotional_sliders = [slideDatabasde];
+        this.promotionalSlidersRepository.update(
+          { id: slider.id },
+          {
+            typep: type,
+          },
+        );
       });
     }
     //save banner
     if (createTypeDto?.banners) {
-      const bannerArray: BannerT[] = [];
       createTypeDto?.banners.map(async (banner) => {
         delete banner.image;
-        const bannerDb = await this.bannerRepository.save({
+        const bannerdb = await this.bannerRepository.save({
           ...banner,
         });
-        bannerArray.push(bannerDb);
+        this.bannerRepository.update(
+          { id: bannerdb.id },
+          {
+            type: type,
+          },
+        );
       });
-      type.banners = bannerArray;
     }
-    return await this.typeRepository.save(type);
+    return type;
   }
 
   async findAll() {

@@ -1,48 +1,63 @@
 import { Injectable } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { GetCategoriesDto } from './dto/get-categories.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category } from './entities/category.entity';
+import { CategoryT } from './entities/category.entity';
 import Fuse from 'fuse.js';
-import categoriesJson from './categories.json';
 import { paginate } from 'src/common/pagination/paginate';
 import { GetCategoriesAlongChildrenDto } from './dto/get-categories-along-children.dto';
-const categories = plainToClass(Category, categoriesJson);
+import { InjectRepository } from '@nestjs/typeorm';
+import { getRepository, Repository } from 'typeorm';
+import { CategoriAttachment } from 'src/common/entities/attachment.entity';
+import { TypeT } from 'src/types/entities/type.entity';
 const options = {
   keys: ['name', 'type.slug'],
   threshold: 0.3,
 };
-const fuse = new Fuse(categories, options);
 @Injectable()
 export class CategoriesService {
-  private categories: Category[] = categories;
+  constructor(
+    @InjectRepository(CategoryT)
+    private categoryRepository: Repository<CategoryT>,
+  ) {}
 
-  create(createCategoryDto: CreateCategoryDto) {
-    console.log(createCategoryDto);
-    return this.categories[0];
+  categoryImage = getRepository(CategoriAttachment);
+  typeRepository = getRepository(TypeT);
+
+  async create(createCategoryDto: CreateCategoryDto) {
+    const category = new CategoryT();
+    if (createCategoryDto?.image) {
+      const image = await this.categoryImage.save({
+        ...createCategoryDto.image,
+      });
+      category.image = image;
+    }
+    category.details = createCategoryDto?.details;
+    category.icon = createCategoryDto?.icon;
+    category.name = createCategoryDto?.name;
+    category.slug = createCategoryDto?.name + 'slug';
+
+    const type = await this.typeRepository.findOne({
+      id: +createCategoryDto?.type_id,
+    });
+    category.type = type;
+    return await this.categoryRepository.save(category);
   }
 
-  getCategories({ limit, page, search }: GetCategoriesDto) {
+  async getCategories({ limit, page, search }: GetCategoriesDto) {
     if (!page) page = 1;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    let data: Category[] = this.categories;
+    let data: CategoryT[] = await this.categoryRepository.find();
+    const fuse = new Fuse(data, options);
     if (search) {
       const parseSearchParams = search.split(';');
       for (const searchParam of parseSearchParams) {
         const [key, value] = searchParam.split(':');
-        // data = data.filter((item) => item[key] === value);
+        data = data.filter((item) => item[key] === value);
         data = fuse.search(value)?.map(({ item }) => item);
       }
     }
-    // if (text?.replace(/%/g, '')) {
-    //   data = fuse.search(text)?.map(({ item }) => item);
-    // }
-    // if (hasType) {
-    //   data = fuse.search(hasType)?.map(({ item }) => item);
-    // }
-
     const results = data.slice(startIndex, endIndex);
     const url = `/categories?search=${search}&limit=${limit}`;
     return {
@@ -58,17 +73,17 @@ export class CategoriesService {
   //   return this.categories;
   // }
 
-  getCategory(id: number): Category {
-    return this.categories.find((p) => p.id === id);
+  async getCategory(id: number) {
+    const c = await this.categoryRepository.findOne(id);
+    return c;
   }
 
   update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return this.categories[0];
+    return;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    const category = await this.categoryRepository.findOne(id);
+    return await this.categoryRepository.remove(category);
   }
 }
-
-// { search: 'type.slug:grocery', searchJoin: 'and', limit: '30' }

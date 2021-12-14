@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TagAttachment } from 'src/common/entities/attachment.entity';
 import { paginate } from 'src/common/pagination/paginate';
-import { Repository } from 'typeorm';
+import { TypeT } from 'src/types/entities/type.entity';
+import { getRepository, Repository } from 'typeorm';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { GetTagsDto } from './dto/get-tags.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
@@ -15,10 +17,29 @@ export class TagsService {
     @InjectRepository(TagT) private tagsRepository: Repository<TagT>,
   ) {}
 
-  create(createTagDto: CreateTagDto) {
-    console.log(createTagDto);
-    return;
-    return this.tagsRepository.save(createTagDto);
+  tagRepository = getRepository(TagAttachment);
+  typeRepository = getRepository(TypeT);
+  async create(createTagDto: CreateTagDto) {
+    const tag = new TagT();
+
+    if (createTagDto?.image) {
+      delete createTagDto.image.id;
+      const image = await this.tagRepository.save({
+        ...createTagDto.image,
+      });
+      tag.image = image;
+    }
+    const type = await this.typeRepository.findOne({
+      id: +createTagDto?.type_id,
+    });
+    console.log(type);
+
+    tag.details = createTagDto?.details;
+    tag.name = createTagDto?.name;
+    tag.type = type;
+    tag.icon = createTagDto?.icon;
+    tag.slug = createTagDto?.name + 'slug';
+    return this.tagsRepository.save(tag);
   }
 
   async findAll({ page, limit }: GetTagsDto) {

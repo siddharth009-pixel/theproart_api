@@ -7,6 +7,7 @@ import { TypeSettingsT } from 'src/common/entities/typesettings.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { BannerT } from 'src/common/entities/banner.entity';
+import { TagT } from 'src/tags/entities/tag.entity';
 
 export class Type extends CoreEntity {
   name: string;
@@ -47,6 +48,11 @@ export class TypeT extends CoreEntityT {
 
   @Column({ nullable: true })
   icon: string;
+
+  @OneToOne(() => TagT, (tag) => tag.type, {
+    nullable: true,
+  })
+  tag: TagT;
 
   @OneToMany(() => BannerT, (banner) => banner.type, {
     eager: true,

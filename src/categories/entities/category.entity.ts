@@ -1,6 +1,5 @@
 import {
   Attachment,
-  AttachmentT,
   CategoriAttachment,
 } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
@@ -10,11 +9,11 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToMany,
-  ManyToOne,
-  OneToMany,
   OneToOne,
+  Tree,
+  TreeChildren,
+  TreeParent,
 } from 'typeorm';
 
 export class Category extends CoreEntity {
@@ -30,6 +29,7 @@ export class Category extends CoreEntity {
 }
 
 @Entity('category')
+@Tree('closure-table')
 export class CategoryT extends CoreEntityT {
   @Column()
   name: string;
@@ -41,21 +41,28 @@ export class CategoryT extends CoreEntityT {
   details: string;
 
   @Column({ nullable: true })
-  icon?: string;
+  icon: string;
 
-  @OneToOne(() => TypeT, (typet) => typet.id)
-  type?: TypeT;
+  @OneToOne(() => TypeT, (typet) => typet.id, {
+    cascade: true,
+    eager: true,
+    nullable: true,
+  })
+  @JoinColumn()
+  type: TypeT;
 
-  @ManyToOne(() => CategoryT, (category) => category.children)
+  @TreeParent({})
   parent: CategoryT;
 
-  @OneToMany(() => CategoryT, (category) => category.parent)
+  @TreeChildren({
+    cascade: true,
+  })
   children: CategoryT[];
 
   @ManyToMany(() => ProductT, (p) => p.categories)
   products: ProductT[];
 
-  @OneToOne(() => CategoriAttachment, (attch) => attch.categories_logo, {
+  @OneToOne(() => CategoriAttachment, (a) => a.logo, {
     eager: true,
     nullable: true,
   })
