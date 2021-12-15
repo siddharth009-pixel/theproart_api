@@ -58,10 +58,12 @@ export class CategoriesService {
         data = fuse.search(value)?.map(({ item }) => item);
       }
     }
-    const results = data.slice(startIndex, endIndex);
+    const results1 = data.slice(startIndex, endIndex);
+    const results = data;
     const url = `/categories?search=${search}&limit=${limit}`;
+    console.log(url);
     return {
-      data: results,
+      data: data,
       ...paginate(data.length, page, limit, results.length, url),
     };
   }

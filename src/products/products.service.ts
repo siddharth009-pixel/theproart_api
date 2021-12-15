@@ -3,11 +3,13 @@ import { plainToClass } from 'class-transformer';
 import { CreateProductDto } from './dto/create-product.dto';
 import { GetProductsDto, ProductPaginator } from './dto/get-products.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Product } from './entities/product.entity';
+import { Product, ProductT } from './entities/product.entity';
 import { paginate } from 'src/common/pagination/paginate';
 import productsJson from './products.json';
 import Fuse from 'fuse.js';
 import { GetPopularProductsDto } from './dto/get-popular-products.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 const products = plainToClass(Product, productsJson);
 const options = {
   keys: ['name', 'type.slug', 'categories.slug', 'status', 'shop_id'],
@@ -17,7 +19,11 @@ const fuse = new Fuse(products, options);
 @Injectable()
 export class ProductsService {
   private products: Product[] = products;
+  constructor(
+    @InjectRepository(ProductT) private productRepository: Repository<ProductT>,
+  ) {}
   create(createProductDto: CreateProductDto) {
+    console.log(createProductDto);
     return this.products[0];
   }
 
@@ -74,7 +80,8 @@ export class ProductsService {
     return this.products[0];
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: number) {
+    const product = await this.productRepository.findOne(id);
+    return await this.productRepository.remove(product);
   }
 }

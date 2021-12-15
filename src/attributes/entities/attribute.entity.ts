@@ -1,7 +1,13 @@
-import { AttachmentT } from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
-import { Shop } from 'src/shops/entities/shop.entity';
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Shop, ShopT } from 'src/shops/entities/shop.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { AttributeValue, AttributeValueT } from './attribute-value.entity';
 
 export class Attribute extends CoreEntity {
@@ -16,12 +22,19 @@ export class Attribute extends CoreEntity {
 export class AttributeT extends CoreEntityT {
   @Column()
   name: string;
-  @Column()
+
+  @Column({ nullable: true })
   shop_id: number;
+
   @Column()
   slug: string;
-  @OneToMany(() => AttributeValueT, (values) => values.attribute)
+
+  @OneToMany(() => AttributeValueT, (values) => values.attribute, {
+    eager: true,
+  })
   values: AttributeValueT[];
 
-  shop: Shop;
+  @ManyToOne(() => ShopT, {})
+  @JoinColumn()
+  shop: ShopT;
 }

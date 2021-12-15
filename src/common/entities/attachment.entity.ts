@@ -1,6 +1,7 @@
 import { CategoryT } from 'src/categories/entities/category.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
 import { CouponT } from 'src/coupons/entities/coupon.entity';
+import { ProductT } from 'src/products/entities/product.entity';
 import { ShopT } from 'src/shops/entities/shop.entity';
 import { TagT } from 'src/tags/entities/tag.entity';
 import { TypeT } from 'src/types/entities/type.entity';
@@ -38,6 +39,27 @@ export class ProfileAttachment extends AttachmentT {
   @JoinColumn()
   profile: ProfileT;
 }
+
+@Entity('ProductAttachment')
+export class ProductGallery extends AttachmentT {
+  @OneToOne(() => ProductT, (product: ProductT) => product.image, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  product: ProductT;
+}
+
+@Entity('ProductAttachment')
+export class ProductAttachment extends AttachmentT {
+  @OneToOne(() => ProductT, (product: ProductT) => product.gallery, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  product: ProductT;
+}
+
 @Entity('BannerAttachment')
 export class BannerAttachment extends AttachmentT {
   @OneToOne(() => BannerT, (banner: BannerT) => banner.image, {

@@ -3,19 +3,25 @@ import {
   AttributeValueT,
 } from 'src/attributes/entities/attribute-value.entity';
 import { Category, CategoryT } from 'src/categories/entities/category.entity';
-import { Attachment, AttachmentT } from 'src/common/entities/attachment.entity';
+import {
+  Attachment,
+  ProductAttachment,
+  ProductGallery,
+} from 'src/common/entities/attachment.entity';
 import { CoreEntity, CoreEntityT } from 'src/common/entities/core.entity';
+import { OrderProductPivotT } from 'src/common/entities/orderproductpivot.entity';
+import { VariationT } from 'src/common/entities/variation.entity';
 import { Order, OrderT } from 'src/orders/entities/order.entity';
-import { Shop } from 'src/shops/entities/shop.entity';
+import { Shop, ShopT } from 'src/shops/entities/shop.entity';
 import { Tag, TagT } from 'src/tags/entities/tag.entity';
 import { Type, TypeT } from 'src/types/entities/type.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToMany,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 export enum ProductStatus {
   PUBLISH = 'publish',
@@ -81,51 +87,6 @@ export class VariationOption {
   name: string;
   value: string;
 }
-
-@Entity('OrderProductPivot')
-export class OrderProductPivotT {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  variation_option_id?: number;
-  @Column()
-  order_quantity: number;
-  @Column()
-  unit_price: number;
-  @Column()
-  subtotal: number;
-}
-
-@Entity('VariationOption')
-export class VariationOptionT {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  name: string;
-  @Column()
-  value: string;
-}
-
-@Entity('Variation')
-export class VariationT {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  title: string;
-  @Column()
-  price: number;
-  @Column()
-  sku: string;
-  @Column()
-  is_disable: boolean;
-  @Column()
-  sale_price?: number;
-  @Column()
-  quantity: number;
-  @OneToMany(() => VariationOptionT, (vo) => vo.id)
-  options: VariationOptionT[];
-}
-
 @Entity('Product')
 export class ProductT extends CoreEntityT {
   @Column()
@@ -134,49 +95,53 @@ export class ProductT extends CoreEntityT {
   @Column()
   slug: string;
 
-  @Column()
+  @Column({ default: 0 })
   type_id: number;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
-  @Column()
+  @Column({ nullable: true, default: true })
   in_stock: boolean;
 
-  @Column()
+  @Column({ nullable: true, default: true })
   is_taxable: boolean;
 
-  @Column()
-  sale_price?: number;
+  @Column({ nullable: true })
+  sale_price: number;
 
-  @Column()
-  max_price?: number;
+  @Column({ nullable: true })
+  max_price: number;
 
-  @Column()
-  min_price?: number;
+  @Column({ nullable: true })
+  min_price: number;
 
-  @Column()
-  sku?: string;
+  @Column({ nullable: true })
+  sku: string;
 
-  @Column()
-  height?: string;
+  @Column({ nullable: true })
+  height: string;
 
-  @Column()
-  length?: string;
+  @Column({ nullable: true })
+  length: string;
 
-  @Column()
-  width?: string;
+  @Column({ nullable: true })
+  width: string;
 
-  @Column()
-  price?: number;
+  @Column({ nullable: true })
+  price: number;
 
-  @Column()
+  @Column({ nullable: true, default: 5 })
   quantity: number;
 
-  @Column()
+  @Column({ nullable: true })
   unit: string;
 
-  @OneToOne(() => TypeT, (typ) => typ.id)
+  @OneToOne(() => TypeT, (typ) => typ.id, {
+    eager: true,
+    nullable: true,
+  })
+  @JoinColumn()
   type: TypeT;
 
   @Column({
@@ -196,28 +161,54 @@ export class ProductT extends CoreEntityT {
   @ManyToMany(() => CategoryT, (cate) => cate.products)
   categories: CategoryT[];
 
-  @ManyToMany(() => TagT, (tagt) => tagt.products)
+  @ManyToMany(() => TagT, (tagt) => tagt.products, {
+    eager: true,
+    nullable: true,
+  })
   tags: TagT[];
 
-  @OneToMany(() => AttributeValueT, (att) => att.id)
-  variations?: AttributeValueT[];
+  @OneToMany(() => AttributeValueT, (att) => att.id, {
+    eager: true,
+    nullable: true,
+  })
+  variations: AttributeValueT[];
 
-  @OneToMany(() => VariationT, (att) => att.id)
-  variation_options?: VariationT[];
+  @OneToMany(() => VariationT, (att) => att.product, {
+    nullable: true,
+    eager: true,
+  })
+  variation_options: VariationT[];
 
-  @OneToOne(() => OrderProductPivotT, (att) => att.id)
-  pivot?: OrderProductPivotT;
+  @OneToOne(() => OrderProductPivotT, (att) => att.product, {
+    nullable: true,
+    eager: true,
+  })
+  pivot: OrderProductPivotT;
 
-  @ManyToMany(() => OrderT, (orderT) => orderT.products)
-  orders?: OrderT[];
+  @ManyToMany(() => OrderT, (orderT) => orderT.products, {
+    nullable: true,
+    eager: true,
+  })
+  orders: OrderT[];
 
-  @OneToMany(() => AttachmentT, (att) => att.id)
-  gallery?: AttachmentT[];
+  @OneToMany(() => ProductGallery, (att) => att.product, {
+    nullable: true,
+    eager: true,
+  })
+  gallery: ProductGallery[];
 
-  @OneToOne(() => AttachmentT, (att) => att.id)
-  image?: AttachmentT;
+  @OneToOne(() => ProductAttachment, (att) => att.product, {
+    nullable: true,
+    eager: true,
+  })
+  image: ProductAttachment;
 
-  // shop: Shop;
+  @OneToOne(() => ShopT, { nullable: true, eager: true })
+  @JoinColumn()
+  shop: ShopT;
+
+  @Column({ nullable: true })
+  shop_id: number;
+
   // related_products?: Product[];
-  // shop_id: number;
 }
