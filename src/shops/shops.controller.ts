@@ -31,12 +31,9 @@ export class ShopsController {
   }
 
   @Get()
-  @UseGuards(AuthGuard())
-  async getShops(
-    @Query() query: GetShopsDto,
-    @Req() req,
-  ): Promise<ShopPaginatorT> {
-    return this.shopsService.getShops(query, req.user.payload.id);
+  // @UseGuards(AuthGuard())
+  async getShops(@Query() query: GetShopsDto): Promise<ShopPaginatorT> {
+    return this.shopsService.getShops(query);
   }
 
   @Get(':slug')

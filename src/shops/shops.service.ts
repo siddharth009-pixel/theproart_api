@@ -107,13 +107,12 @@ export class ShopsService {
     return shopfinal;
   }
 
-  async getShops({ search, limit, page }: GetShopsDto, id: number) {
+  async getShops({ search, limit, page }: GetShopsDto) {
     if (!page) page = 1;
-    const user = await this.userRepositoy.findOne({ id: id });
-    console.log(user);
+    // const user = await this.userRepositoy.findOne({ id: id });
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    let data: ShopT[] = await this.shopRepository.find({ owner: user });
+    let data: ShopT[] = await this.shopRepository.find();
     // let data: Shop[] = this.shops;
     if (search) {
       const parseSearchParams = search.split(';');

@@ -32,7 +32,7 @@ export class ProductsController {
   }
 
   @Get(':slug')
-  async getProductBySlug(@Param('slug') slug: string): Promise<Product> {
+  async getProductBySlug(@Param('slug') slug: string) {
     return this.productsService.getProductBySlug(slug);
   }
 

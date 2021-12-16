@@ -19,8 +19,10 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   OneToMany,
+  ManyToOne,
   OneToOne,
 } from 'typeorm';
 export enum ProductStatus {
@@ -137,7 +139,7 @@ export class ProductT extends CoreEntityT {
   @Column({ nullable: true })
   unit: string;
 
-  @OneToOne(() => TypeT, (typ) => typ.id, {
+  @ManyToOne(() => TypeT, (typ) => typ.id, {
     eager: true,
     nullable: true,
   })
@@ -158,18 +160,23 @@ export class ProductT extends CoreEntityT {
   })
   status: ProductStatus;
 
-  @ManyToMany(() => CategoryT, (cate) => cate.products)
+  @ManyToMany(() => CategoryT, (cate) => cate.products, {
+    eager: true,
+    nullable: true,
+  })
+  @JoinTable()
   categories: CategoryT[];
 
   @ManyToMany(() => TagT, (tagt) => tagt.products, {
     eager: true,
     nullable: true,
   })
+  @JoinTable()
   tags: TagT[];
 
-  @OneToMany(() => AttributeValueT, (att) => att.id, {
-    eager: true,
+  @OneToMany(() => AttributeValueT, (att) => att.product, {
     nullable: true,
+    eager: true,
   })
   variations: AttributeValueT[];
 

@@ -40,9 +40,9 @@ export class ProfileAttachment extends AttachmentT {
   profile: ProfileT;
 }
 
-@Entity('ProductAttachment')
+@Entity('ProductGallery')
 export class ProductGallery extends AttachmentT {
-  @OneToOne(() => ProductT, (product: ProductT) => product.image, {
+  @ManyToOne(() => ProductT, (product: ProductT) => product.gallery, {
     cascade: true,
     onDelete: 'CASCADE',
   })
@@ -52,7 +52,7 @@ export class ProductGallery extends AttachmentT {
 
 @Entity('ProductAttachment')
 export class ProductAttachment extends AttachmentT {
-  @OneToOne(() => ProductT, (product: ProductT) => product.gallery, {
+  @OneToOne(() => ProductT, (product: ProductT) => product.image, {
     cascade: true,
     onDelete: 'CASCADE',
   })

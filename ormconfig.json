@@ -1,11 +1,11 @@
 {
-    "type":"postgres",
-    "host":"localhost",
-    "port":"5432",
-    "username":"igis",
-    "password":"igis",
-    "database":"theproart",
-    "entities":["dist/**/*.entity{.ts,.js}"],
-    "autoLoadEntities": true,
-    "synchronize": true
+  "type": "postgres",
+  "host": "localhost",
+  "port": "5432",
+  "username": "igis",
+  "password": "igis",
+  "database": "theproart",
+  "entities": ["dist/**/*.entity{.ts,.js}"],
+  "autoLoadEntities": true,
+  "synchronize": true
 }

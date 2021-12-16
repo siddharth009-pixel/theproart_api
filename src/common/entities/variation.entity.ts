@@ -25,6 +25,7 @@ export class VariationT {
   sale_price?: number;
   @Column()
   quantity: number;
+
   @ManyToOne(() => ProductT, (pro) => pro.variation_options)
   @JoinColumn()
   product: ProductT;

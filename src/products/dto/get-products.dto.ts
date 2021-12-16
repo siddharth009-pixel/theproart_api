@@ -2,10 +2,10 @@ import { SortOrder } from 'src/common/dto/generic-conditions.dto';
 import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
 import { Paginator } from 'src/common/dto/paginator.dto';
 
-import { Product } from '../entities/product.entity';
+import { Product, ProductT } from '../entities/product.entity';
 
-export class ProductPaginator extends Paginator<Product> {
-  data: Product[];
+export class ProductPaginator extends Paginator<ProductT> {
+  data: ProductT[];
 }
 
 export class GetProductsDto extends PaginationArgs {
