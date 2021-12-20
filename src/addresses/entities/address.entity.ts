@@ -72,7 +72,7 @@ export class AddressT extends CoreEntityT {
   @Column()
   title: string;
 
-  @Column()
+  @Column({default:true})
   default: boolean;
 
   @OneToOne(() => UserAddressT, (useraddresst) => useraddresst.id, {
@@ -90,8 +90,10 @@ export class AddressT extends CoreEntityT {
   type: AddressType;
 
   @ManyToOne(() => UserT, (customer) => customer.address, {
-    eager: true,
+    cascade: true,
+    nullable:true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn()
   customer: UserT;
 }

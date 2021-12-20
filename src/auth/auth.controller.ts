@@ -74,7 +74,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(AuthGuard())
   me(@Req() req) {
-    const id = req.user.payload.id;
+    const id = req?.user?.payload?.id||1;
     return this.authService.me(id);
   }
 }

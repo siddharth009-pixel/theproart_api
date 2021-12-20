@@ -210,7 +210,7 @@ export class ProductT extends CoreEntityT {
   })
   image: ProductAttachment;
 
-  @OneToOne(() => ShopT, { nullable: true, eager: true })
+  @ManyToOne(() => ShopT, { nullable: true, eager: true })
   @JoinColumn()
   shop: ShopT;
 

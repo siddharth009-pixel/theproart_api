@@ -16,6 +16,7 @@ import {
   AttachmentT,
   ProfileAttachment,
 } from 'src/common/entities/attachment.entity';
+import { throwIfEmpty } from 'rxjs';
 const users = plainToClass(User, usersJson);
 
 const options = {
@@ -117,7 +118,7 @@ export class UsersService {
         delete updateUserDto?.profile?.avatar?.id;
         avatar = await this.attachmenttRepositry.save({
           ...updateUserDto.profile.avatar,
-          created_at: new Date(),
+          created_at: new Date().toString(),
         });
         profilen = await this.profileRepositry.save({
           ...updateUserDto.profile,
@@ -126,7 +127,6 @@ export class UsersService {
       }
       user.profile = profilen;
       this.userRepository.save(user);
-      return user;
     } else {
       let avatar;
       const profile = await this.profileRepositry.findOne({
@@ -138,7 +138,7 @@ export class UsersService {
         if (updateUserDto?.profile?.avatar?.original) {
           avatar = await this.attachmenttRepositry.save({
             ...updateUserDto.profile.avatar,
-            created_at: new Date(),
+            created_at: new Date().toString(),
           });
           profile.avatar = avatar;
         }
@@ -149,8 +149,41 @@ export class UsersService {
         }
       }
       this.profileRepositry.save(profile);
-      return user;
     }
+    if (updateUserDto?.address) {
+      updateUserDto.address.map(async (address) => {
+        if (address['id']) {
+          const address_id = address['id'];
+          const useraddressid = address.address['id'];
+          await this.userAddressRepositry.update(
+            { id: useraddressid },
+            {
+              ...address.address,
+            },
+          );
+          delete address.address;
+          delete address.customer_id;
+          await this.addessRepositry.update(
+            { id: address_id },
+            {
+              ...address,
+            },
+          );
+        } else {
+          const addresslocal = new AddressT();
+          const user_address = await this.userAddressRepositry.save({
+            ...address.address,
+          });
+          addresslocal.customer = user;
+          addresslocal.address = user_address;
+          addresslocal.title = address.title;
+          addresslocal.type = address.type;
+          addresslocal.default = address?.default;
+          await this.addessRepositry.save(addresslocal);
+        }
+      });
+    }
+    return user;
   }
   async remove(id: number) {
     return `This action removes a #${id} user`;

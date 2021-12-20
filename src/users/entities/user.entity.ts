@@ -50,7 +50,9 @@ export class UserT extends CoreEntityT {
   @Column({ default: true })
   is_active: boolean;
 
-  @OneToMany(() => AddressT, (addresst: AddressT) => addresst.customer, {})
+  @OneToMany(() => AddressT, (addresst: AddressT) => addresst.customer, {
+    eager: true,
+  })
   address: AddressT[];
 
   @OneToMany(() => OrderT, (ordert: OrderT) => ordert.customer, {})

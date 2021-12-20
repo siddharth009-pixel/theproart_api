@@ -63,11 +63,12 @@ export class ShopT extends CoreEntityT {
   @Column({ default: 0 })
   orders_count: number;
 
-  @Column({
-    nullable: true,
-    default: 1,
-  })
-  owner_id: number;
+  // @Column({
+  //   nullable: true,
+  //   default: 1,
+  // })
+  // owner_id: number;
+
   @Column({ default: 0 })
   products_count: number;
 

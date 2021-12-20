@@ -27,6 +27,7 @@ export class CategoriesService {
   async create(createCategoryDto: CreateCategoryDto) {
     const category = new CategoryT();
     if (createCategoryDto?.image) {
+      delete createCategoryDto.image.id;
       const image = await this.categoryImage.save({
         ...createCategoryDto.image,
       });

@@ -45,7 +45,7 @@ export class ShopsService {
     const user = await this.userRepositoy.findOne({ id: user_id });
     const shop = new ShopT();
     shop.owner = user;
-    shop.owner_id = user_id;
+    // shop.owner_id = user_id;
     shop.name = createShopDto?.name;
     shop.description = createShopDto?.description;
     shop.slug = createShopDto?.name + 'slug';

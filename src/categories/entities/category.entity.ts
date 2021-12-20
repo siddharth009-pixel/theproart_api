@@ -10,6 +10,7 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
+  ManyToOne,
   OneToOne,
   Tree,
   TreeChildren,
@@ -43,7 +44,7 @@ export class CategoryT extends CoreEntityT {
   @Column({ nullable: true })
   icon: string;
 
-  @OneToOne(() => TypeT, (typet) => typet.id, {
+  @ManyToOne(() => TypeT, (typet) => typet.id, {
     cascade: true,
     eager: true,
     nullable: true,
