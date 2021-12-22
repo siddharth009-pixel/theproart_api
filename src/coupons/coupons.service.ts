@@ -51,7 +51,6 @@ export class CouponsService {
 
   async getCoupon(id: number) {
     const coupon = await this.couponRepository.findOne({ id: id });
-    console.log(coupon);
     return coupon;
   }
 

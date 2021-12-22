@@ -32,7 +32,6 @@ export class TagsService {
     const type = await this.typeRepository.findOne({
       id: +createTagDto?.type_id,
     });
-    console.log(type);
 
     tag.details = createTagDto?.details;
     tag.name = createTagDto?.name;

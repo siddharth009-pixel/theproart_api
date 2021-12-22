@@ -59,7 +59,6 @@ export class AttributesService {
     const attribute = await this.attributeRepositor.findOne(id);
     await this.attributeRepositor
       .softDelete(attribute)
-      .then((res) => console.log(res))
       .catch((err) => console.log(err));
     return 1;
   }

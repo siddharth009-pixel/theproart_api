@@ -155,7 +155,6 @@ export class ShopsService {
   }
 
   async update(id: number, updateShopDto: UpdateShopDto) {
-    console.log(updateShopDto);
     const shop = await this.shopRepository.findOne({ id: id });
     shop.name = updateShopDto?.name;
     shop.description = updateShopDto?.description;

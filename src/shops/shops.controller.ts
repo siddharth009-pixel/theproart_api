@@ -26,7 +26,6 @@ export class ShopsController {
   @Post()
   @UseGuards(AuthGuard())
   create(@Body() createShopDto: CreateShopDto, @Req() req) {
-    console.log(req.user.payload.id);
     return this.shopsService.create(createShopDto, req.user.payload.id);
   }
 

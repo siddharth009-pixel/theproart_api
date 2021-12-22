@@ -4,8 +4,6 @@
   "port": "3306",
   "username": "root",
   "password": "igis",
-  "database": "theproart_new",
-  "entities": ["dist/**/*.entity{.ts,.js}"],
-  "autoLoadEntities": true,
-  "synchronize": true
+  "database": "theproart",
+  "entities": ["dist/**/*.entity{.ts,.js}"]
 }

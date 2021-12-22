@@ -62,7 +62,6 @@ export class CategoriesService {
     const results1 = data.slice(startIndex, endIndex);
     const results = data;
     const url = `/categories?search=${search}&limit=${limit}`;
-    console.log(url);
     return {
       data: data,
       ...paginate(data.length, page, limit, results.length, url),
@@ -72,7 +71,6 @@ export class CategoriesService {
   // getCategoriesAlongChildren(
   //   values: GetCategoriesAlongChildrenDto,
   // ): Category[] {
-  //   console.log(values, 'values');
   //   return this.categories;
   // }
 

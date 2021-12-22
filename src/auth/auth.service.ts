@@ -40,7 +40,6 @@ export class AuthService {
     if (!createUserInput.permission) {
       createUserInput.permission = Permission.CUSTOMER;
     }
-    console.log(createUserInput);
     createUserInput.password = encrypt(createUserInput.password);
     const newPost = this.userRepository.create({
       ...createUserInput,
@@ -82,7 +81,6 @@ export class AuthService {
     changePasswordInput: ChangePasswordDto,
     id: number,
   ): Promise<CoreResponse> {
-    console.log(changePasswordInput);
     if (changePasswordInput.newPassword == changePasswordInput.oldPassword) {
       throw new BadRequestException('Please Enter Diffrent Password');
     }
@@ -109,7 +107,6 @@ export class AuthService {
   async forgetPassword(
     forgetPasswordInput: ForgetPasswordDto,
   ): Promise<CoreResponse> {
-    console.log(forgetPasswordInput);
     const user = await this.userRepository.findOne({
       email: forgetPasswordInput.email,
     });
@@ -128,7 +125,6 @@ export class AuthService {
   async verifyForgetPasswordToken(
     verifyForgetPasswordTokenInput: VerifyForgetPasswordDto,
   ): Promise<CoreResponse> {
-    console.log(verifyForgetPasswordTokenInput);
 
     return {
       success: true,
@@ -138,7 +134,6 @@ export class AuthService {
   async resetPassword(
     resetPasswordInput: ResetPasswordDto,
   ): Promise<CoreResponse> {
-    console.log(resetPasswordInput);
 
     return {
       success: true,
@@ -146,28 +141,24 @@ export class AuthService {
     };
   }
   async socialLogin(socialLoginDto: SocialLoginDto): Promise<AuthResponse> {
-    console.log(socialLoginDto);
     return {
       token: 'jwt token',
       permissions: ['super_admin', 'customer'],
     };
   }
   async otpLogin(otpLoginDto: OtpLoginDto): Promise<AuthResponse> {
-    console.log(otpLoginDto);
     return {
       token: 'jwt token',
       permissions: ['super_admin', 'customer'],
     };
   }
   async verifyOtpCode(verifyOtpInput: VerifyOtpDto): Promise<CoreResponse> {
-    console.log(verifyOtpInput);
     return {
       message: 'success',
       success: true,
     };
   }
   async sendOtpCode(otpInput: OtpDto): Promise<OtpResponse> {
-    console.log(otpInput);
     return {
       message: 'success',
       success: true,

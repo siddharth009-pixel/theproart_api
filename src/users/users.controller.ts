@@ -48,12 +48,10 @@ export class UsersController {
 
   @Post(':id/active')
   activeUser(@Param('id') id: number) {
-    console.log(id);
     // return this.usersService.getUsers(updateUserInput.id);
   }
   @Post(':id/ban')
   banUser(@Param('id') id: number) {
-    console.log(id);
     // return this.usersService.getUsers(updateUserInput.id);
   }
 }
@@ -64,13 +62,9 @@ export class ProfilesController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  createProfile(@Body() createProfileDto: CreateProfileDto) {
-    console.log(createProfileDto);
-  }
+  createProfile(@Body() createProfileDto: CreateProfileDto) {}
   @Put(':id')
-  updateProfile(@Body() updateProfileDto: UpdateProfileDto) {
-    console.log(updateProfileDto);
-  }
+  updateProfile(@Body() updateProfileDto: UpdateProfileDto) {}
   @Delete(':id')
   deleteProfile(@Param('id') id: number) {
     return this.usersService.remove(id);

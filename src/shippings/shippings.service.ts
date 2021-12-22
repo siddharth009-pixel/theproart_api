@@ -28,7 +28,6 @@ export class ShippingsService {
   }
 
   async update(id: number, updateShippingDto: UpdateShippingDto) {
-    console.log(updateShippingDto);
     if (typeof id != 'number') {
       return;
     }

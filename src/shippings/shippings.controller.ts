@@ -39,7 +39,6 @@ export class ShippingsController {
     @Param('id') id: string,
     @Body() updateShippingDto: UpdateShippingDto,
   ) {
-    console.log(id);
     return this.shippingsService.update(+id, updateShippingDto);
   }
 

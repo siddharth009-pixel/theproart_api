@@ -12,7 +12,6 @@ export class AddressesService {
   ) {}
 
   create(createAddressDto: CreateAddressDto) {
-    console.log(createAddressDto);
     return 'This action adds a new address';
   }
 
@@ -25,7 +24,6 @@ export class AddressesService {
   }
 
   update(id: number, updateAddressDto: UpdateAddressDto) {
-    console.log(updateAddressDto);
     return `This action updates a #${id} address`;
   }
 
