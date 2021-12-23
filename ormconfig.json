@@ -1,9 +1,11 @@
 {
-  "type": "mysql",
-  "host": "localhost",
-  "port": "3306",
-  "username": "root",
-  "password": "igis",
+  "type": "postgres",
+  "host": "13.233.145.113",
+  "port": "5432",
+  "username": "theproart1",
+  "password": "theproart1",
   "database": "theproart",
-  "entities": ["dist/**/*.entity{.ts,.js}"]
+  "entities": ["dist/**/*.entity{.ts,.js}"],
+  "synchronize": true,
+  "autoLoadEntities": true
 }
