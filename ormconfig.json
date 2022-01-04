@@ -5,7 +5,5 @@
   "username": "postgres",
   "password": "postgres",
   "database": "theproart",
-  "entities": ["dist/**/*.entity{.ts,.js}"],
-  "synchronize": true,
-  "autoLoadEntities": true
+  "entities": ["dist/**/*.entity{.ts,.js}"]
 }
