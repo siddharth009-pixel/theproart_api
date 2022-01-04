@@ -1,0 +1,36 @@
+name: Deploy master
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout source code
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Prepare Dist
+      run: cp Procfile package.json .npmrc dist/
+
+    - name: Generate deployment package
+      run: cd dist && zip -r deploy.zip . -x '*.git*' && cp deploy.zip ../
+
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v18
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: "beanstalkbuildnode"
+        environment_name: "Beanstalkbuildnode-env"
+        version_label: ver-${{ github.sha }}
+        region: ap-south-1
+        deployment_package: deploy.zip
