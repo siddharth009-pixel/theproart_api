@@ -12,8 +12,14 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v2
 
+    - name: Install yarn
+      run: npm install yarn
+
+    - name: Install nest
+      run: npm install -g @nestjs/cli
+
     - name: Install Dependencies
-      run: npm install
+      run: yarn
 
     - name: Build
       run: npm run build
