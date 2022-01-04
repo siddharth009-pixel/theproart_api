@@ -3,7 +3,6 @@ import { plainToClass } from 'class-transformer';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { Shop, ShopT } from './entities/shop.entity';
-import shopsJson from './shops.json';
 import Fuse from 'fuse.js';
 import { GetShopsDto } from './dto/get-shops.dto';
 import { paginate } from 'src/common/pagination/paginate';
@@ -20,15 +19,12 @@ import { ShopSettingsT } from 'src/common/entities/shopsetting.entity';
 import { ShopAddress } from 'src/addresses/entities/address.entity';
 import { UserT } from 'src/users/entities/user.entity';
 
-const shops = plainToClass(Shop, shopsJson);
 const options = {
   keys: ['name', 'type.slug', 'is_active'],
   threshold: 0.3,
 };
 @Injectable()
 export class ShopsService {
-  private shops: Shop[] = shops;
-
   constructor(
     @InjectRepository(ShopT) private shopRepository: Repository<ShopT>,
   ) {}
@@ -133,12 +129,13 @@ export class ShopsService {
       ...paginate(data.length, page, limit, results.length, url),
     };
   }
-  getStaffs({ shop_id, limit, page }: GetStaffsDto) {
+  async getStaffs({ shop_id, limit, page }: GetStaffsDto) {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    let staffs: Shop['staffs'] = [];
+    let staffs: ShopT['staffs'] = [];
     if (shop_id) {
-      staffs = this.shops.find((p) => p.id === Number(shop_id))?.staffs ?? [];
+      const shop = await this.shopRepository.findOne({ id: shop_id });
+      staffs = shop?.staffs ?? [];
     }
     const results = staffs?.slice(startIndex, endIndex);
     const url = `/staffs?limit=${limit}`;

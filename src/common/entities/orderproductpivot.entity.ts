@@ -3,6 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -12,6 +13,8 @@ export class OrderProductPivotT {
   @PrimaryGeneratedColumn()
   id: number;
   @Column({ nullable: true })
+  order_id: number;
+  @Column({ nullable: true })
   variation_option_id?: number;
   @Column({ nullable: true })
   order_quantity: number;
@@ -19,10 +22,6 @@ export class OrderProductPivotT {
   unit_price: number;
   @Column({ nullable: true })
   subtotal: number;
-  @OneToOne(() => ProductT, (att) => att.pivot, {
-    nullable: true,
-    cascade: true,
-  })
-  @JoinColumn()
-  product: ProductT;
+  @Column({ nullable: true })
+  product_id: number;
 }

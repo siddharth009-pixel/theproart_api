@@ -1,9 +1,9 @@
 {
   "type": "postgres",
-  "host": "13.233.145.113",
+  "host": "13.127.142.60",
   "port": "5432",
-  "username": "theproart1",
-  "password": "theproart1",
+  "username": "postgres",
+  "password": "postgres",
   "database": "theproart",
   "entities": ["dist/**/*.entity{.ts,.js}"],
   "synchronize": true,

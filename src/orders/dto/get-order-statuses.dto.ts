@@ -2,12 +2,15 @@ import { SortOrder } from 'src/common/dto/generic-conditions.dto';
 import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
 import { Paginator } from 'src/common/dto/paginator.dto';
 
-import { OrderStatus } from '../entities/order-status.entity';
+import { OrderStatus, OrderStatusT } from '../entities/order-status.entity';
 
 export class OrderStatusPaginator extends Paginator<OrderStatus> {
   data: OrderStatus[];
 }
 
+export class OrderStatusPaginatorT extends Paginator<OrderStatusT> {
+  data: OrderStatusT[];
+}
 export class GetOrderStatusesDto extends PaginationArgs {
   orderBy?: QueryOrderStatusesOrderByColumn;
   sortedBy?: SortOrder;

@@ -7,15 +7,25 @@ import {
   Delete,
   Query,
   Put,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { GetOrdersDto, OrderPaginator } from './dto/get-orders.dto';
-import { CreateOrderStatusDto } from './dto/create-order-status.dto';
+import {
+  GetOrdersDto,
+  OrderPaginator,
+  OrderPaginatorT,
+} from './dto/get-orders.dto';
+import {
+  CreateOrderStatusDto,
+  UpdateOrderStatusDto,
+} from './dto/create-order-status.dto';
 import { GetOrderStatusesDto } from './dto/get-order-statuses.dto';
 import { CheckoutVerificationDto } from './dto/verify-checkout.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('orders')
 @ApiTags('Orders')
@@ -23,12 +33,14 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  @UseGuards(AuthGuard())
+  create(@Body() createOrderDto: CreateOrderDto, @Req() req) {
+    const payload = req?.user?.payload;
+    return this.ordersService.create(createOrderDto, payload);
   }
 
   @Get()
-  async getOrders(@Query() query: GetOrdersDto): Promise<OrderPaginator> {
+  async getOrders(@Query() query: GetOrdersDto): Promise<OrderPaginatorT> {
     return this.ordersService.getOrders(query);
   }
 
@@ -77,12 +89,15 @@ export class OrderStatusController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateOrderDto: UpdateOrderStatusDto,
+  ) {
+    return this.ordersService.updateOrderStatus(+id, updateOrderDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.ordersService.remove(+id);
+    return this.ordersService.removeOrderStatus(+id);
   }
 }

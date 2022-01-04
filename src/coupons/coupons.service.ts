@@ -54,6 +54,10 @@ export class CouponsService {
     return coupon;
   }
 
+  async verify(id: string) {
+    const coupon = await this.couponRepository.findOne({ code: id });
+    return coupon;
+  }
   async update(id: number, updateCouponDto: UpdateCouponDto) {
     let coupne = await this.couponRepository.findOne({ id: id });
     if (updateCouponDto?.image) {

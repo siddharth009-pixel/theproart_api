@@ -15,7 +15,7 @@ import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { GetShopsDto, ShopPaginatorT } from './dto/get-shops.dto';
 import { GetStaffsDto } from './dto/get-staffs.dto';
-import { UserPaginator } from 'src/users/dto/get-users.dto';
+import { UserPaginator, UserPaginatorU } from 'src/users/dto/get-users.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 @Controller('shops')
@@ -69,7 +69,7 @@ export class StaffsController {
   }
 
   @Get()
-  async getStaffs(@Query() query: GetStaffsDto): Promise<UserPaginator> {
+  async getStaffs(@Query() query: GetStaffsDto): Promise<UserPaginatorU> {
     return this.shopsService.getStaffs(query);
   }
 

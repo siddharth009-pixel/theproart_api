@@ -52,7 +52,7 @@ export class ProductsController {
 export class PopularProductsController {
   constructor(private readonly productsService: ProductsService) {}
   @Get()
-  async getProducts(@Query() query: GetPopularProductsDto): Promise<Product[]> {
+  async getProducts(@Query() query: GetPopularProductsDto) {
     return this.productsService.getPopularProducts(query);
   }
 }

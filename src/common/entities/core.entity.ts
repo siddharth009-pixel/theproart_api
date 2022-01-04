@@ -14,11 +14,11 @@ export class CoreEntityT {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // @Column({ nullable: true })
-  // created_at: Date;
+  @Column({ default: new Date() })
+  created_at: Date;
 
-  // @Column({
-  //   default: new Date(),
-  // })
-  // updated_at: Date;
+  @Column({
+    nullable: true,
+  })
+  updated_at: Date;
 }

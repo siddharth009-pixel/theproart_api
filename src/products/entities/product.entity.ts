@@ -186,15 +186,15 @@ export class ProductT extends CoreEntityT {
   })
   variation_options: VariationT[];
 
-  @OneToOne(() => OrderProductPivotT, (att) => att.product, {
+  @ManyToOne(() => OrderProductPivotT, {
     nullable: true,
     eager: true,
   })
+  @JoinColumn()
   pivot: OrderProductPivotT;
 
   @ManyToMany(() => OrderT, (orderT) => orderT.products, {
     nullable: true,
-    eager: true,
   })
   orders: OrderT[];
 

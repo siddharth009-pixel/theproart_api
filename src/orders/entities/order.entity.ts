@@ -77,8 +77,17 @@ export class OrderT extends CoreEntityT {
   @Column()
   paid_total: number;
 
-  @Column()
+  @Column({ nullable: true })
   payment_id?: string;
+
+  @Column({ nullable: true })
+  discount?: number;
+
+  @Column()
+  delivery_fee: number;
+
+  @Column()
+  delivery_time: string;
 
   @Column({
     type: 'enum',
@@ -89,50 +98,53 @@ export class OrderT extends CoreEntityT {
 
   @ManyToOne(() => CouponT, (coupent: CouponT) => coupent.orders, {
     eager: true,
+    nullable: true,
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
+  @JoinColumn({ name: 'coupon_id' })
   coupon?: CouponT;
 
-  @Column()
-  discount?: number;
-
-  @Column()
-  delivery_fee: number;
-
-  @Column()
-  delivery_time: string;
-
-  @OneToOne(
+  @ManyToOne(
     () => UserAddressT,
     (useraddresst: UserAddressT) => useraddresst.id,
-    { eager: true, cascade: true },
+    { eager: true, nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' },
   )
   @JoinColumn()
   billing_address: UserAddressT;
 
-  @OneToOne(
+  @ManyToOne(
     () => UserAddressT,
     (useraddresst: UserAddressT) => useraddresst.id,
-    { eager: true, cascade: true },
+    { eager: true, nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' },
   )
   @JoinColumn()
   shipping_address: UserAddressT;
 
-  @ManyToMany(() => ProductT, (productt) => productt.orders)
+  @ManyToMany(() => ProductT, (productt) => productt.orders, {
+    eager: true,
+    nullable: true,
+  })
   @JoinTable()
   products: ProductT[];
 
-  @OneToOne(() => ShopT, (shop) => shop.id)
+  @ManyToOne(() => ShopT, (shop) => shop.id, {
+    nullable: true,
+  })
   @JoinColumn()
   shop: ShopT;
 
-  @ManyToOne((type) => OrderT, (category) => category.children)
+  @ManyToOne((type) => OrderT, (category) => category.children, {
+    nullable: true,
+  })
   parent_order?: OrderT;
 
-  @OneToMany((type) => OrderT, (category) => category.parent_order)
+  @OneToMany((type) => OrderT, (category) => category.parent_order, {
+    nullable: true,
+  })
   children?: OrderT[];
 
-  @OneToOne(
+  @ManyToOne(
     () => OrderStatusT,
     (orderstatust: OrderStatusT) => orderstatust.id,
     {

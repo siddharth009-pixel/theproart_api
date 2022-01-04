@@ -4,7 +4,6 @@ import { CreateTypeDto } from './dto/create-type.dto';
 import { UpdateTypeDto } from './dto/update-type.dto';
 import { Type, TypeT } from './entities/type.entity';
 
-import typesJson from './types.json';
 import Fuse from 'fuse.js';
 import { GetTypesDto } from './dto/get-types.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,14 +16,12 @@ import {
 } from 'src/common/entities/attachment.entity';
 import { TypeSettingsT } from 'src/common/entities/typesettings.entity';
 
-const types = plainToClass(Type, typesJson);
 const options = {
   keys: ['name'],
   threshold: 0.3,
 };
 @Injectable()
 export class TypesService {
-  private types: Type[] = types;
   constructor(
     @InjectRepository(TypeT) private typeRepository: Repository<TypeT>,
   ) {}
@@ -104,7 +101,7 @@ export class TypesService {
   }
 
   update(id: number, updateTypeDto: UpdateTypeDto) {
-    return this.types[0];
+    return id;
   }
 
   async remove(id: number) {

@@ -131,7 +131,10 @@ export class CouponAttachment extends AttachmentT {
 
 @Entity('categoriattachment')
 export class CategoriAttachment extends AttachmentT {
-  @OneToOne(() => CategoryT, (cat: CategoryT) => cat.image, {})
+  @OneToOne(() => CategoryT, (cat: CategoryT) => cat.image, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn()
   logo: CategoryT;
 }
@@ -151,6 +154,7 @@ export class PaymentInfoT {
   @OneToOne(() => BalanceT, (bal: BalanceT) => bal.payment_info, {
     cascade: true,
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn()
   balance: BalanceT;

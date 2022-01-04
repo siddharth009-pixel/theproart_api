@@ -35,7 +35,6 @@ export class TagT extends CoreEntityT {
   @OneToOne(() => TagAttachment, (attch) => attch.tag, {
     eager: true,
     nullable: true,
-    onDelete: 'NO ACTION',
   })
   image: TagAttachment;
 
@@ -44,8 +43,9 @@ export class TagT extends CoreEntityT {
 
   @OneToOne(() => TypeT, (type) => type.tag, {
     nullable: true,
-    cascade: true,
-    onDelete: 'NO ACTION',
+    eager: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn()
   type: TypeT;

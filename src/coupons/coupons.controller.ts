@@ -33,9 +33,9 @@ export class CouponsController {
   getCoupon(@Param('id') id: string) {
     return this.couponsService.getCoupon(+id);
   }
-  @Get(':id/verify')
+  @Get('verify/:id')
   verify(@Param('id') id: string) {
-    return this.couponsService.getCoupon(+id);
+    return this.couponsService.verify(id);
   }
 
   @Put(':id')

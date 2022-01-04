@@ -23,15 +23,12 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { plainToClass } from 'class-transformer';
 import { User, UserT } from 'src/users/entities/user.entity';
-import usersJson from 'src/users/users.json';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { decrypt, encrypt } from 'src/common/cryproencdes';
-const users = plainToClass(User, usersJson);
 
 @Injectable()
 export class AuthService {
-  private users: User[] = users;
   constructor(
     @InjectRepository(UserT) private userRepository: Repository<UserT>,
     private jwtService: JwtService,
@@ -60,13 +57,13 @@ export class AuthService {
   async login(loginInput: LoginDto): Promise<AuthResponse | string> {
     const user = await this.userRepository.findOne({
       email: loginInput.email,
-    }); 
+    });
     if (user) {
       if (decrypt(user.password) == loginInput.password) {
         const { id } = user;
         const payload = { id };
         const asscesstoken = this.jwtService.sign({ payload });
-        return { 
+        return {
           token: asscesstoken,
           permissions: ['super_admin', 'customer'],
         };
@@ -125,7 +122,6 @@ export class AuthService {
   async verifyForgetPasswordToken(
     verifyForgetPasswordTokenInput: VerifyForgetPasswordDto,
   ): Promise<CoreResponse> {
-
     return {
       success: true,
       message: 'Password change successful',
@@ -134,7 +130,6 @@ export class AuthService {
   async resetPassword(
     resetPasswordInput: ResetPasswordDto,
   ): Promise<CoreResponse> {
-
     return {
       success: true,
       message: 'Password change successful',
@@ -188,7 +183,7 @@ export class AuthService {
   async me(id: number): Promise<UserT> {
     const user = await this.userRepository.findOne({ id });
     return user;
-  } 
+  }
 
   // updateUser(id: number, updateUserInput: UpdateUserInput) {
   //   return `This action updates a #${id} user`;

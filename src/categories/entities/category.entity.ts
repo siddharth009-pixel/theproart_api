@@ -45,9 +45,10 @@ export class CategoryT extends CoreEntityT {
   icon: string;
 
   @ManyToOne(() => TypeT, (typet) => typet.id, {
-    cascade: true,
     eager: true,
     nullable: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn()
   type: TypeT;

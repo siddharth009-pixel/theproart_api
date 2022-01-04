@@ -20,6 +20,7 @@ import { ImportsModule } from './imports/imports.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnectionOptions } from 'typeorm';
+import { ContactModule } from './contact/contact.module';
 @Module({
   imports: [
     UsersModule,
@@ -48,6 +49,7 @@ import { getConnectionOptions } from 'typeorm';
           retryAttempts: 2,
         }),
     }),
+    ContactModule,
   ],
   controllers: [],
   providers: [],

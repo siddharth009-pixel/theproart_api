@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
 import { UpdateAttributeDto } from './dto/update-attribute.dto';
-import attributesJson from './attributes.json';
 import { Attribute, AttributeT } from './entities/attribute.entity';
 import { plainToClass } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,11 +9,8 @@ import { AttributeValueT } from './entities/attribute-value.entity';
 import { ShopT } from 'src/shops/entities/shop.entity';
 import { shop_cover } from 'src/common/entities/attachment.entity';
 
-const attributes = plainToClass(Attribute, attributesJson);
 @Injectable()
 export class AttributesService {
-  private attributes: Attribute[] = attributes;
-
   constructor(
     @InjectRepository(AttributeT)
     private attributeRepositor: Repository<AttributeT>,
@@ -52,7 +48,7 @@ export class AttributesService {
   }
 
   update(id: number, updateAttributeDto: UpdateAttributeDto) {
-    return this.attributes[0];
+    return id;
   }
 
   async remove(id: number) {

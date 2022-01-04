@@ -5,12 +5,8 @@ import { Repository } from 'typeorm';
 import { CreateTaxDto } from './dto/create-tax.dto';
 import { UpdateTaxDto } from './dto/update-tax.dto';
 import { Tax, TaxT } from './entities/tax.entity';
-import taxesJson from './taxes.json';
-const taxes = plainToClass(Tax, taxesJson);
 @Injectable()
 export class TaxesService {
-  private taxes: Tax[] = taxes;
-
   constructor(
     @InjectRepository(TaxT) private taxeRepository: Repository<TaxT>,
   ) {}

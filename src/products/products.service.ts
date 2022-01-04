@@ -5,7 +5,6 @@ import { GetProductsDto, ProductPaginator } from './dto/get-products.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product, ProductT } from './entities/product.entity';
 import { paginate } from 'src/common/pagination/paginate';
-import productsJson from './products.json';
 import Fuse from 'fuse.js';
 import { GetPopularProductsDto } from './dto/get-popular-products.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,14 +15,12 @@ import {
 } from 'src/common/entities/attachment.entity';
 import { ShopT } from 'src/shops/entities/shop.entity';
 import { TypeT } from 'src/types/entities/type.entity';
-const products = plainToClass(Product, productsJson);
 const options = {
   keys: ['name', 'type.slug', 'categories.slug', 'status', 'shop_id'],
   threshold: 0.3,
 };
 @Injectable()
 export class ProductsService {
-  private products: Product[] = products;
   constructor(
     @InjectRepository(ProductT) private productRepository: Repository<ProductT>,
   ) {}
@@ -149,19 +146,21 @@ export class ProductsService {
       .catch((err) => {
         console.log(err);
       });
-    const related_products = this.products
-      // .filter((p) => p.type.slug === product.type.slug)
-      .slice(0, 20);
+    const related_products = await this.productRepository.find();
+    // .filter((p) => p.type.slug === product.type.slug)
+    // .slice(0, 20);
+
     return {
       ...product,
       related_products,
     };
   }
-  getPopularProducts({ shop_id, limit }: GetPopularProductsDto): Product[] {
-    return this.products?.slice(0, limit);
+  async getPopularProducts({ shop_id, limit }: GetPopularProductsDto) {
+    // return this.products?.slice(0, limit);
+    return await this.productRepository.find();
   }
   update(id: number, updateProductDto: UpdateProductDto) {
-    return this.products[0];
+    return id;
   }
 
   async remove(id: number) {

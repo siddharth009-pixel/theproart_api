@@ -6,7 +6,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import Fuse from 'fuse.js';
 
 import { User, UserT } from './entities/user.entity';
-import usersJson from './users.json';
 import { paginate } from 'src/common/pagination/paginate';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getRepository, Repository } from 'typeorm';
@@ -17,7 +16,6 @@ import {
   ProfileAttachment,
 } from 'src/common/entities/attachment.entity';
 import { throwIfEmpty } from 'rxjs';
-const users = plainToClass(User, usersJson);
 
 const options = {
   keys: ['name', 'type.slug', 'categories.slug', 'status'],
@@ -25,7 +23,6 @@ const options = {
 };
 @Injectable()
 export class UsersService {
-  private users: User[] = users;
   constructor(
     @InjectRepository(UserT) private userRepository: Repository<UserT>,
   ) {}
