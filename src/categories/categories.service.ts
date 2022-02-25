@@ -1,0 +1,129 @@
+import { Injectable } from '@nestjs/common';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { GetCategoriesDto } from './dto/get-categories.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryT } from './entities/category.entity';
+import Fuse from 'fuse.js';
+import { paginate } from 'src/common/pagination/paginate';
+import { GetCategoriesAlongChildrenDto } from './dto/get-categories-along-children.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { getRepository, Repository } from 'typeorm';
+import { CategoriAttachment } from 'src/common/entities/attachment.entity';
+import { TypeT } from 'src/types/entities/type.entity';
+const options = {
+  keys: ['name', 'type.slug'],
+  threshold: 0.3,
+};
+@Injectable()
+export class CategoriesService {
+  constructor(
+    @InjectRepository(CategoryT)
+    private categoryRepository: Repository<CategoryT>,
+  ) {}
+
+  categoryImage = getRepository(CategoriAttachment);
+  typeRepository = getRepository(TypeT);
+
+  async create(createCategoryDto: CreateCategoryDto) {
+    const category = new CategoryT();
+    if (createCategoryDto?.image) {
+      delete createCategoryDto.image.id;
+      const image = await this.categoryImage.save({
+        ...createCategoryDto.image,
+      });
+      category.image = image;
+    }
+    category.details = createCategoryDto?.details;
+    category.icon = createCategoryDto?.icon;
+    category.name = createCategoryDto?.name;
+    category.slug = createCategoryDto?.name + 'slug';
+
+    const type = await this.typeRepository.findOne({
+      id: +createCategoryDto?.type_id,
+    });
+    category.type = type;
+    const date = new Date()
+    category.created_at=date
+    return await this.categoryRepository.save(category);
+  }
+
+  async getCategories({ limit, page, search }: GetCategoriesDto) {
+    if (!page) page = 1;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    let data: CategoryT[] = await this.categoryRepository.find();
+    const fuse = new Fuse(data, options);
+    if (search) {
+      const parseSearchParams = search.split(';');
+      for (const searchParam of parseSearchParams) {
+        const [key, value] = searchParam.split(':');
+        data = data.filter((item) => item[key] === value);
+        data = fuse.search(value)?.map(({ item }) => item);
+      }
+    }
+    const results1 = data.slice(startIndex, endIndex);
+    const results = data;
+    const url = `/categories?search=${search}&limit=${limit}`;
+    return {
+      data: data,
+      ...paginate(data.length, page, limit, results.length, url),
+    };
+  }
+
+  // getCategoriesAlongChildren(
+  //   values: GetCategoriesAlongChildrenDto,
+  // ): Category[] {
+  //   return this.categories;
+  // }
+
+  async getCategory(id: number) {
+    const c = await this.categoryRepository.findOne(id);
+    return c;
+  }
+
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    console.log('updateCategoryDto',updateCategoryDto)
+    const category = await this.categoryRepository.findOne({ id });
+
+    category.details = updateCategoryDto?.details;
+    category.icon = updateCategoryDto?.icon;
+    category.name = updateCategoryDto?.name;
+    category.slug = updateCategoryDto?.name + 'slug';
+
+    if (updateCategoryDto?.image) {
+      if (updateCategoryDto?.image?.id) {
+        delete updateCategoryDto.image.id;
+      }
+      const oldImage = await this.categoryImage.find({ logo: category })
+      if (oldImage) {
+        await this.categoryImage.update({
+          logo: category
+        }, {
+          ...updateCategoryDto.image,
+          logo: category
+        })
+      } else {
+        await this.categoryImage.save({
+          ...updateCategoryDto.image,
+          logo: category
+        })
+      }
+    }
+
+    if(updateCategoryDto?.parent){
+      const parentCat=await this.categoryRepository.findOne({id: +updateCategoryDto?.parent })
+      category.parent=parentCat;
+    }
+
+    const type = await this.typeRepository.findOne({
+      id: +updateCategoryDto?.type_id,
+    });
+    category.type = type;
+    return await this.categoryRepository.save(category);
+  }
+
+  async remove(id: number) {
+    const category = await this.categoryRepository.findOne(id);
+    return await this.categoryRepository.remove(category);
+  }
+}

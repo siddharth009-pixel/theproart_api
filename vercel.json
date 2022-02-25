@@ -1,0 +1,7 @@
+{
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_REST_API_ENDPOINT": "http://theproartapi-env.eba-h6mpuftj.ap-south-1.elasticbeanstalk.com/api/"
+    }
+  }
+}

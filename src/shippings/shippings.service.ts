@@ -1,0 +1,47 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateShippingDto } from './dto/create-shipping.dto';
+import { GetShippingsDto } from './dto/get-shippings.dto';
+import { UpdateShippingDto } from './dto/update-shipping.dto';
+import { ShippingT } from './entities/shipping.entity';
+
+@Injectable()
+export class ShippingsService {
+  constructor(
+    @InjectRepository(ShippingT)
+    private shippintRepository: Repository<ShippingT>,
+  ) {}
+
+  async create(createShippingDto: CreateShippingDto) {
+    const date = new Date()
+    const newCreateShippingDto={
+      ...createShippingDto,
+      created_at: date
+    }
+    return await this.shippintRepository.save(newCreateShippingDto);
+  }
+
+  getShippings({}: GetShippingsDto) {
+    const shippings = this.shippintRepository.find();
+    return shippings;
+  }
+
+  async findOne(id: number) {
+    const shipping = await this.shippintRepository.findOne(id);
+    return shipping;
+  }
+
+  async update(id: number, updateShippingDto: UpdateShippingDto) {
+    if (typeof id != 'number') {
+      return;
+    }
+    const shipping = await this.shippintRepository.findOne(id);
+    if (shipping) return this.shippintRepository.update(id, updateShippingDto);
+  }
+
+  async remove(id: number) {
+    const shipping = await this.shippintRepository.findOne(id);
+    if (shipping) return this.shippintRepository.remove(shipping);
+  }
+}
