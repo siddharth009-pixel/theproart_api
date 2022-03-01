@@ -9,6 +9,7 @@ import {
   Put,
   UseGuards,
   Req,
+  Res,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -27,6 +28,7 @@ import { GetOrderStatusesDto } from './dto/get-order-statuses.dto';
 import { CheckoutVerificationDto } from './dto/verify-checkout.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
 
 @Controller('orders')
 @ApiTags('Orders')
@@ -34,8 +36,13 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post('create/orderId')
-  createOrderId(@Body() createOrderIdDto: any){
-    return this.ordersService.createOrderId(createOrderIdDto)
+  createOrderId(@Body() createOrderIdDto: any,@Res({passthrough: true}) response: Response){
+    return this.ordersService.createOrderId(createOrderIdDto,response)
+  }
+
+  @Post('payment/verify')
+  verifyPayment(@Body() paymentData:any,@Res({passthrough: true}) response: Response){
+    return this.ordersService.verifyPayment(paymentData,response)
   }
 
   @Post()

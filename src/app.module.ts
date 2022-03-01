@@ -22,6 +22,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ContactModule } from './contact/contact.module';
 import { ConfigModule } from '@nestjs/config';
 import { EmailServiceModule } from './email-service/email-service.module';
+import { RazorpayModule } from 'nestjs-razorpay';
+
 import path from 'path';
 @Module({
   imports: [
@@ -46,6 +48,10 @@ import path from 'path';
     ImportsModule,
     AuthModule,
     EmailServiceModule,
+    RazorpayModule.forRoot({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    }),    
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,

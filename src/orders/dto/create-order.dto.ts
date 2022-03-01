@@ -18,6 +18,7 @@ export class CreateOrderDto {
   card?: CardInput;
   billing_address?: UserAddressInput;
   shipping_address?: UserAddressInput;
+  paymentInfo?:any;
 }
 
 export class UserAddressInput {

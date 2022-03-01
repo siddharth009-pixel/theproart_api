@@ -21,8 +21,8 @@ import {
 import { OrderProductPivotT } from '../../common/entities/orderproductpivot.entity';
 import { OrderStatus, OrderStatusT } from './order-status.entity';
 export enum PaymentGatewayType {
-  STRIPE = 'stripe',
-  CASH_ON_DELIVERY = 'cod',
+  RAZORPAY="RAZORPAY",
+  CASH_ON_DELIVERY = "CASH_ON_DELIVERY",
 }
 
 export class Order extends CoreEntity {

@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Res } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { GetOrdersDto } from './dto/get-orders.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrderT } from './entities/order.entity';
+import { OrderT, PaymentGatewayType } from './entities/order.entity';
 import { OrderStatusT } from './entities/order-status.entity';
 import { paginate } from 'src/common/pagination/paginate';
+import shortid from 'shortid';
 import {
   GetOrderStatusesDto,
   OrderStatusPaginatorT,
@@ -27,13 +28,14 @@ import { OrderProductPivotT } from 'src/common/entities/orderproductpivot.entity
 import { ShopT } from '../shops/entities/shop.entity';
 import * as Razorpay from 'razorpay';
 import { InjectRazorpay } from 'nestjs-razorpay';
+import { Response } from 'express';
+import { RazorpayPaymentInfoT } from '../common/entities/attachment.entity';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(OrderT) private orderRepository: Repository<OrderT>,
-    @InjectRazorpay() private readonly razorpayClient: any,
-    // @InjectRazorpay() private readonly razorpayClient: Razorpay,
+    @InjectRazorpay() private readonly razorpayClient: any, // @InjectRazorpay() private readonly razorpayClient: Razorpay,
   ) {}
 
   options = {
@@ -62,23 +64,44 @@ export class OrdersService {
   productRepository = getRepository(ProductT);
   orderStatusRepository = getRepository(OrderStatusT);
   orderProductPivotRepository = getRepository(OrderProductPivotT);
+  razorpayPaymentInfoRepository = getRepository(RazorpayPaymentInfoT);
   shopRepository = getRepository(ShopT);
-  
-  async createOrderId(createOrderIdDto:any){
+
+  verifyPayment = (paymentData: any, response: Response) => {
+    let body =
+      paymentData.razorpay_order_id + '|' + paymentData.razorpay_payment_id;
+
+    let crypto = require('crypto');
+    let expectedSignature = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(body.toString())
+      .digest('hex');
+    console.log('sig received ', paymentData.razorpay_signature);
+    console.log('sig generated ', expectedSignature);
+    let responseData = { signatureIsValid: false };
+    if (expectedSignature === paymentData.razorpay_signature) {
+      responseData = { signatureIsValid: true };
+    }
+    response.status(HttpStatus.OK).send(responseData);
+    return;
+  };
+
+  async createOrderId(createOrderIdDto: any, response: Response) {
     let options = {
       amount: createOrderIdDto.amount, // amount in the smallest currency unit
       currency: 'INR',
-      receipt: 'order_rcptid_11',
+      receipt: shortid.generate(),
     };
-    this.razorpayClient.orders.create(options, function (err, order) {
-      console.log('order',order);
-      if(err) {
-        console.log('err',err);
+    await this.razorpayClient.orders.create(options, function (err, order) {
+      console.log('order', order);
+      if (err) {
+        console.log('err', err);
         return false;
       }
-      console.log('order----id',order.id);
-      return {orderId:order.id}
-      
+      console.log('order----id', order.id);
+      // return {orderId:order.id}
+      response.status(HttpStatus.OK).send({ order });
+      return;
     });
   }
 
@@ -99,8 +122,16 @@ export class OrdersService {
     order.discount = createOrderInput?.discount;
     order.delivery_fee = createOrderInput?.delivery_fee;
     order.delivery_time = createOrderInput?.delivery_time;
-    // order.payment_gateway = createOrderInput?.payment_gateway;
-
+    order.payment_gateway = createOrderInput?.payment_gateway;
+    const { razorpay_order_id, razorpay_payment_id } =
+      createOrderInput?.paymentInfo;
+    if (createOrderInput?.payment_gateway === PaymentGatewayType.RAZORPAY) {
+      let razorpay_payment = new RazorpayPaymentInfoT();
+      razorpay_payment.razorpay_order_id = razorpay_order_id;
+      razorpay_payment.razorpay_payment_id = razorpay_payment_id;
+      razorpay_payment.order = order;
+      await this.razorpayPaymentInfoRepository.save(razorpay_payment);
+    }
     if (createOrderInput?.coupon_id) {
       const coupon = await this.couponRepository.findOne({
         id: createOrderInput?.coupon_id,

@@ -10,12 +10,6 @@ import { RazorpayModule } from 'nestjs-razorpay';
   imports: [
     TypeOrmModule.forFeature([OrderT]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    RazorpayModule.forRoot({
-      key_id: `rzp_test_qwMexyNjiKF0UT`,
-      key_secret: `ul8fAx1CTLL5ClfsUIzRWRMx`,
-      // key_id: `${process.env.RAZORPAY_KEY_ID}`,
-      // key_secret: `${process.env.RAZORPAY_KEY_SECRET}`,
-    })
   ],
   controllers: [OrdersController, OrderStatusController],
   providers: [OrdersService],

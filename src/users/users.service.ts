@@ -161,7 +161,7 @@ export class UsersService {
           profile.avatar.thumbnail = updateUserDto?.profile?.avatar?.thumbnail;
         }
       }
-      this.profileRepositry.save(profile);
+      await this.profileRepositry.save(profile);
     }
     if (updateUserDto?.address) {
       updateUserDto.address.map(async (address) => {
@@ -203,7 +203,8 @@ export class UsersService {
         }
       });
     }
-    return user;
+    // return user;
+    return this.userRepository.findOne(id);
   }
   async remove(id: number) {
     return `This action removes a #${id} user`;

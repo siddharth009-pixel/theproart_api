@@ -14,6 +14,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { OrderT } from '../../orders/entities/order.entity';
 import { BalanceT } from './balance.entity';
 import { BannerT } from './banner.entity';
 
@@ -167,4 +168,21 @@ export class PaymentInfoT {
   })
   @JoinColumn()
   balance: BalanceT;
+}
+
+
+@Entity('RazorpayPaymentInfo')
+export class RazorpayPaymentInfoT {
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column({ nullable: true })
+  razorpay_order_id: string;
+  @Column({ nullable: true })
+  razorpay_payment_id: string;
+  @OneToOne(() => OrderT, (order) => order.id, {
+    cascade: true,
+    nullable: true,
+  })
+  @JoinColumn()
+  order:OrderT ;
 }
