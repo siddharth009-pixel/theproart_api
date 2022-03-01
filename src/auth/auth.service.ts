@@ -46,6 +46,7 @@ export class AuthService {
     @Inject(CACHE_MANAGER)
     private cacheManager: Cache,
   ) { }
+  
   async register(createUserInput: RegisterDto): Promise<AuthResponse> {
     if (!createUserInput.permission) {
       createUserInput.permission = Permission.CUSTOMER;
@@ -55,6 +56,10 @@ export class AuthService {
       ...createUserInput,
     });
     try {
+      const existingUser=await this.userRepository.findOne({email: createUserInput.email})
+      if(existingUser) {
+        throw new UnauthorizedException('User already exists');
+      }
       const user = await this.userRepository.save(newPost);
       const { id, permission } = user;
       const payload = { id };
@@ -90,6 +95,7 @@ export class AuthService {
       throw new NotFoundException('User Not found');
     }
   }
+
   async changePassword(
     changePasswordInput: ChangePasswordDto,
     id: number,

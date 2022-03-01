@@ -143,7 +143,7 @@ export class ShopsService {
       if ( this?.isShopValid(shop?.created_at)) {
         let balance_id = shop?.balance?.id
         if (this?.isOrderValid(order?.created_at)) {
-          if (order?.status?.name === 'final status') {
+          if (order?.status?.name === 'Delivered') {
             if (order?.deducted == false) {
 
               let balance = await this.balanaceRepository.findOne({ id: balance_id })

@@ -15,12 +15,22 @@ import {
   VerifyForgetPasswordDto,
   VerifyOtpDto,
 } from './dto/create-auth.dto';
+import { AppService } from './app.service';
 
 @Controller()
 @ApiTags('Auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+  // constructor(private readonly authService: AuthService,private readonly appService: AppService) {}
+  // @Get('google')
+  // @UseGuards(AuthGuard('google'))
+  // async googleAuth(@Req() req) {}
 
+  // @Get('google/redirect')
+  // @UseGuards(AuthGuard('google'))
+  // googleAuthRedirect(@Req() req) {
+  //   return this.appService.googleLogin(req)
+  // }
   @Post('register')
   createAccount(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
@@ -85,5 +95,20 @@ export class AuthController {
     // console.log('user is :',req?.user)
     const id = req?.user?.payload?.id||1;
     return this.authService.me(id);
+  }
+}
+
+@Controller('google')
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get()
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req) {}
+
+  @Get('redirect')
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(@Req() req) {
+    return this.appService.googleLogin(req)
   }
 }
