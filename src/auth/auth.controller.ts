@@ -1,4 +1,18 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  UseInterceptors,
+  Redirect,
+  HttpCode,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,6 +30,7 @@ import {
   VerifyOtpDto,
 } from './dto/create-auth.dto';
 import { AppService } from './app.service';
+import { Observable } from 'rxjs';
 
 @Controller()
 @ApiTags('Auth')
@@ -40,7 +55,7 @@ export class AuthController {
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
-  
+
   @Post('admin-request')
   async adminRequest(@Body() adminRequestDTO: AdminRequest) {
     return this.authService.adminApprove(adminRequestDTO);
@@ -81,7 +96,7 @@ export class AuthController {
   async logout(): Promise<boolean> {
     return true;
   }
-  
+
   @Post('verify-forget-password-token')
   verifyForgetPassword(
     @Body() verifyForgetPasswordDto: VerifyForgetPasswordDto,
@@ -93,8 +108,17 @@ export class AuthController {
   @UseGuards(AuthGuard())
   me(@Req() req) {
     // console.log('user is :',req?.user)
-    const id = req?.user?.payload?.id||1;
+    const id = req?.user?.payload?.id || 1;
     return this.authService.me(id);
+  }
+}
+@Injectable()
+export class RedirectInterceptor implements NestInterceptor {
+  constructor(private readonly target: string) {}
+  intercept(context: ExecutionContext, stream$: any): Observable<any> {
+    const response = context.switchToHttp().getResponse();
+    response.redirect(this.target);
+    return stream$;
   }
 }
 
@@ -106,9 +130,43 @@ export class AppController {
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req) {}
 
+  @Get('login')
+  @UseGuards(AuthGuard('google'))
+  async googleLogin(@Req() req) {
+    if (req.user) {
+      console.log('req.user', req.user);
+    } else {
+      console.log('there is no req.user');
+    }
+    return 'donee !!!';
+  }
+  
+  // @Redirect('http://localhost:3003/login/success',401)
   @Get('redirect')
   @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() req) {
-    return this.appService.googleLogin(req)
+  googleAuthRedirect(@Req() req,@Res() res) {
+    console.log('req.user', req.user);
+  
+    res.status(401).redirect('http://localhost:3003/login/success');
+    // return this.appService.googleLogin(req);
   }
+
+  @Get('me')
+  @UseGuards(AuthGuard('google'))
+  @UseInterceptors(new RedirectInterceptor('http://localhost:3003/google'))
+  @Redirect('http://localhost:3000/login/google')
+  me(@Req() req) {
+    const id = req?.user?.payload?.id || 1;
+    console.log('req.user', req.user);
+
+    return id ?? 1;
+  }
+
+  // @Get('me')
+  // @UseGuards(AuthGuard())
+  // me(@Req() req) {
+  //   // console.log('user is :',req?.user)
+  //   const id = req?.user?.payload?.id||1;
+  //   return this.authService.me(id);
+  // }
 }

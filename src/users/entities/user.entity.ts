@@ -13,6 +13,11 @@ import {
 } from 'typeorm';
 import { Profile, ProfileT } from './profile.entity';
 
+export enum UserType{
+    THEPROART='theproart',
+    GOOGLE='google'
+}
+
 export class User extends CoreEntity {
   name: string;
   email: string;
@@ -29,6 +34,13 @@ export class User extends CoreEntity {
 export class UserT extends CoreEntityT {
   @Column()
   name: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserType,
+    default: UserType.THEPROART,
+  })
+  userType: UserType;
 
   @Column()
   email: string;
@@ -50,6 +62,9 @@ export class UserT extends CoreEntityT {
 
   @Column({ default: true })
   is_active: boolean;
+
+  @Column({ default: null })
+  googleId: string;
 
   @OneToMany(() => AddressT, (addresst: AddressT) => addresst.customer, {
     eager: true,
