@@ -21,7 +21,7 @@ import { AppService } from './app.service';
     TypeOrmModule.forFeature([UserT]),
   ],
   controllers: [AuthController,AppController],
-  providers: [AuthService, JwtStrategy,GoogleStrategy,AppService],
-  exports: [JwtStrategy, PassportModule,GoogleStrategy],
+  providers: [AuthService, JwtStrategy, AppService],
+  exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
