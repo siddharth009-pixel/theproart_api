@@ -14,7 +14,7 @@ import { AppService } from './app.service';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: 2592000000,
+        // expiresIn: 2592000000,
       },
     }),
     CacheModule.register(),

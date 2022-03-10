@@ -31,9 +31,7 @@ export class WithdrawsController {
   @Get()
   async withdraws(@Query() query: GetWithdrawsDto): Promise<WithdrawPaginator> {
     let {shop_id}=query
-    console.log('shop_id',shop_id);
     if(shop_id && shop_id>0){
-      console.log('hello');
       return this.withdrawsService.getWithdraws(query);    
     }
     return this.withdrawsService.getAllWithdraws(query);

@@ -29,15 +29,12 @@ export class UploadsController {
     }
 
     const response = await this.s3Service.uploadFiles(attachment);
-
-    console.log("end")
     return response;
   }
 
 
   @Post('delete')
   async deleteFile(@Body() deleteObject: deleteObjectDTO) {
-    console.log('deleteObject',deleteObject)
     return await this.s3Service.s3_delete(deleteObject)
   }
 

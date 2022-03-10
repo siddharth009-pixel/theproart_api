@@ -115,7 +115,6 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    console.log('updateUserDto', updateUserDto)
     const user = await this.userRepository.findOne(id);
     user.name = updateUserDto?.name;
     if (user['profile'] == undefined || user['profile'] == null) {
@@ -168,8 +167,6 @@ export class UsersService {
         if (address['id']) {
           const address_id = address['id'];
           const useraddressid = address.address['id'];
-          console.log('address_id', address_id)
-          console.log('useraddressid', useraddressid)
           await this.userAddressRepositry.update(
             { id: useraddressid },
             {

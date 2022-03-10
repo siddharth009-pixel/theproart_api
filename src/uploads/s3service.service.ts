@@ -19,7 +19,6 @@ export class S3Service {
     async uploadFile(file) {
         const { originalname, mimetype } = file;
 
-        // console.log(file)
         return await this.s3_upload(file.buffer, this.AWS_S3_BUCKET, originalname, mimetype);
     }
 
@@ -29,9 +28,7 @@ export class S3Service {
         for (const file of files) {
             try {
                 let fileName = `${shortid.generate()}-${slugify(file.originalname)}`;
-                console.log('slugify', slugify(file.originalname));
                 const res = await this.s3_upload(file.buffer, this.AWS_S3_BUCKET, fileName, file.mimetype);
-                console.log('res', res);
                 response.push(res);
 
             }
@@ -43,38 +40,6 @@ export class S3Service {
 
 
     }
-
-    // async uploadFiles(files) {
-    //     console.log("Call start")
-
-    //     await files.forEach(async file => {
-    //         const { originalname, mimetype } = file;
-    //         const params =
-    //         {
-    //             Bucket: this.AWS_S3_BUCKET,
-    //             Key: String(originalname),
-    //             Body: file.buffer,
-    //             ACL: "public-read",
-    //             ContentType: mimetype,
-    //             ContentDisposition: "inline",
-    //             CreateBucketConfiguration:
-    //             {
-    //                 LocationConstraint: "ap-south-1"
-    //             }
-    //         };
-    //         try {
-    //             const stored = await this.s3.upload(params).promise()
-    //             console.log(stored);
-    //           } catch (err) {
-    //             console.log(err)
-    //           }
-    //             console.log('Upload')
-    //     });
-    //     console.log('end')
-    //     return response;
-    // }
-    // res=await this.s3_upload(file.buffer, this.AWS_S3_BUCKET, originalname, mimetype);
-
 
     async s3_upload(file, bucket, name, mimetype) {
         const params =
@@ -119,7 +84,6 @@ export class S3Service {
         {
 
         let objects = [];
-        console.log('params',params)
         if (params) {
             params.Key.forEach((key) => {
                 objects.push({ Key: key })

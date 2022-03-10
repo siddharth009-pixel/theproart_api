@@ -154,7 +154,6 @@ export class TypesService {
       })
 
       updateTypeDto?.banners.map(async (banner) => {
-        console.log('banners', updateTypeDto?.banners);
         delete banner?.image?.id;
         const banner_attachment = await this.bannerAttachementRepository.save({
           ...banner.image,

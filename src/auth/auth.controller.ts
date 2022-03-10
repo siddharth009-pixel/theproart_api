@@ -107,7 +107,6 @@ export class AuthController {
   @Get('me')
   @UseGuards(AuthGuard())
   me(@Req() req) {
-    // console.log('user is :',req?.user)
     const id = req?.user?.payload?.id || 1;
     return this.authService.me(id);
   }
@@ -157,8 +156,6 @@ export class AppController {
   @Redirect('http://localhost:3000/login/google')
   me(@Req() req) {
     const id = req?.user?.payload?.id || 1;
-    console.log('req.user', req.user);
-
     return id ?? 1;
   }
 

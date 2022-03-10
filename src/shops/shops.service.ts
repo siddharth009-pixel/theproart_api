@@ -77,11 +77,6 @@ export class ShopsService {
 
     // var secondsDifference = Math.floor(difference/1000);
 
-    // console.log('difference = ' + 
-    //   daysDifference + ' day/s ' + 
-    //   hoursDifference + ' hour/s ' + 
-    //   minutesDifference + ' minute/s ' + 
-    //   secondsDifference + ' second/s ');
   }
   timeDifferenceInMinutes(date1: Date, date2: Date) {
     let difference = date1.getTime() - date2.getTime();

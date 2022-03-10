@@ -30,8 +30,6 @@ export class SettingsService {
   deliveryTimeRepository = getRepository(DeliveryTimeT)
 
   async create(createSettingDto: any) {
-    // console.log('createSettingDto', createSettingDto)
-    console.log('options', createSettingDto?.options)
     let setting = await this.settingsRepository.findOne()
     if (!setting) {
       const setting = new SettingT();
@@ -66,7 +64,6 @@ export class SettingsService {
         settingsOptions.seo = seo
       }
 
-      // console.log('options socials', createSettingDto?.options?.contactDetails?.socials)
 
       if (createSettingDto?.options?.contactDetails) {
         let contactDetails = new ContactDetailsT()
@@ -108,7 +105,6 @@ export class SettingsService {
       // const setting = new SettingT();
       const settingsOptions = await this.settingsOptionsRepository.findOne({ id: setting?.options?.id });
       // const settingsOptions = new SettingsOptionsT();
-      console.log('settingsOptions', settingsOptions);
       settingsOptions.siteTitle = updateSettingDto?.options?.siteTitle;
       settingsOptions.siteSubtitle = updateSettingDto?.options?.siteSubtitle;
       settingsOptions.currency = updateSettingDto?.options?.currency;
@@ -156,8 +152,6 @@ export class SettingsService {
         }
       }
 
-      // console.log('options socials', createSettingDto?.options?.contactDetails?.socials)
-      console.log('ns1')
       if (updateSettingDto?.options?.contactDetails) {
         let oldContactDetails = await this.contactDetailsRepository.findOne({ id: setting?.options?.contactDetails?.id })
         if (oldContactDetails) {
@@ -180,8 +174,6 @@ export class SettingsService {
         }
         settingsOptions.contactDetails = contactDetails;
       }
-      console.log('ns2')
-
 
 
       // console.log('updateSettingDto', updateSettingDto);
@@ -207,12 +199,9 @@ export class SettingsService {
       //     await this.deliveryTimeRepository.save(deliveryTime)
       //   }))
       // }
-
-      console.log('npe2')
       await this.settingsOptionsRepository.save(settingsOptions)
       setting.options = settingsOptions
       await this.settingsRepository.save(setting);
-      console.log('npe3')
       return setting;
       // await this.settingsOptionsRepository.update({ id: setting?.options?.id }, settingsOptions)
       // setting.options = settingsOptions

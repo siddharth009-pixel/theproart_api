@@ -74,7 +74,6 @@ export class AuthService {
     }
   }
   async login(loginInput: LoginDto): Promise<AuthResponse | string> {
-    console.log('LoginDto', LoginDto);
     const user = await this.userRepository.findOne({
       email: loginInput.email,
     });
@@ -295,7 +294,6 @@ export class AuthService {
   // }
   async me(id: number): Promise<UserT> {
     const user = await this.userRepository.findOne({ id });
-    // console.log('user object is :',user)
     return user;
   }
 
@@ -324,7 +322,6 @@ export class AuthService {
       email: user.email,
       otp: otp,
     });
-    console.log(mailTrigger);
     const info: SMTPTransport.SentMessageInfo = await mailTrigger.sendMail();
     await this.setCache(user.email, otp);
     return this.changePasswordToken(email);
@@ -340,8 +337,6 @@ export class AuthService {
   async changePasswordCompareOTP(otpDto: VerifyForgetPasswordDto, user) {
     const { token } = otpDto;
     const cacheValue: any = await this.getCache(user.email);
-    console.log(cacheValue);
-    console.log(token);
     if (!cacheValue) {
       return {
         success: false,

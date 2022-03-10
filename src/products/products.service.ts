@@ -175,7 +175,6 @@ export class ProductsService {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    console.log('updateProductDto', updateProductDto);
     let product = await this.productRepository.findOne({ id: id });
     product.name = updateProductDto?.name;
     product.slug = updateProductDto?.name + 'slug';

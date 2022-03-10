@@ -82,7 +82,6 @@ export class CategoriesService {
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    console.log('updateCategoryDto',updateCategoryDto)
     const category = await this.categoryRepository.findOne({ id });
 
     category.details = updateCategoryDto?.details;

@@ -38,26 +38,6 @@ export class OrdersService {
     @InjectRazorpay() private readonly razorpayClient: any, // @InjectRazorpay() private readonly razorpayClient: Razorpay,
   ) {}
 
-  options = {
-    amount: 50000, // amount in the smallest currency unit
-    currency: 'INR',
-    receipt: 'order_rcptid_11',
-  };
-  run() {
-    this.razorpayClient.orders.create(this.options, function (err, orders) {
-      console.log(orders);
-    });
-  }
-  // instance = new Razorpay({  key_id: `${process.env.RAZORPAY_KEY_ID}`,  key_secret: `${process.env.RAZORPAY_KEY_SECRET}`,});
-  // options:any = {
-  //   amount: 50000,  // amount in the smallest currency unit
-  //   currency: "INR",
-  //   receipt: "order_rcptid_11"
-  // };
-  // instance.orders.create(this.options, function(err, order) {
-  //   console.log(order);
-  // });
-
   userRepository = getRepository(UserT);
   couponRepository = getRepository(CouponT);
   useraddressRepository = getRepository(UserAddressT);
@@ -76,8 +56,6 @@ export class OrdersService {
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
       .update(body.toString())
       .digest('hex');
-    console.log('sig received ', paymentData.razorpay_signature);
-    console.log('sig generated ', expectedSignature);
     let responseData = { signatureIsValid: false };
     if (expectedSignature === paymentData.razorpay_signature) {
       responseData = { signatureIsValid: true };
@@ -93,12 +71,9 @@ export class OrdersService {
       receipt: shortid.generate(),
     };
     await this.razorpayClient.orders.create(options, function (err, order) {
-      console.log('order', order);
       if (err) {
-        console.log('err', err);
         return false;
       }
-      console.log('order----id', order.id);
       // return {orderId:order.id}
       response.status(HttpStatus.OK).send({ order });
       return;
@@ -106,7 +81,6 @@ export class OrdersService {
   }
 
   async create(createOrderInput: CreateOrderDto, payload: UserT) {
-    console.log('createOrderInput', createOrderInput);
     const order = new OrderT();
     order.tracking_number = Math.floor(Math.random() * 1000000 + 1).toString();
 
@@ -175,11 +149,9 @@ export class OrdersService {
 
         await this.orderProductPivotRepository.save(orderProductPivot);
 
-        console.log('product', prod);
         orderProductPivot.shop_id = prod.shop_id;
         const shopp = await this.shopRepository.findOne(prod.shop_id);
         orderProductPivot.shop = shopp;
-        console.log('shop', shopp);
 
         await this.orderProductPivotRepository.save(orderProductPivot);
 
@@ -305,12 +277,10 @@ export class OrdersService {
   // }
 
   async updateOrderPivot(id: number, updateOrderInput: any) {
-    console.log('updateOrderInput', updateOrderInput);
     if (updateOrderInput?.status) {
       const status = await this.orderStatusRepository.findOne({
         id: +updateOrderInput?.status,
       });
-      console.log('order-status', status);
       var orderPivot = await this.orderProductPivotRepository.update(id, {
         status: status,
       });
@@ -321,7 +291,6 @@ export class OrdersService {
 
   // async update(id: number, updateOrderInput: UpdateOrderDto) {
   async update(id: number, updateOrderInput) {
-    console.log('hhhhhh');
     if (updateOrderInput?.status) {
       const status = await this.orderStatusRepository.findOne({
         id: +updateOrderInput?.status,
