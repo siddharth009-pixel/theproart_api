@@ -61,7 +61,7 @@ export class OrdersController {
   @UseGuards(AuthGuard())
   async getCustomerOrders(@Query() query: GetOrdersDto,@Req() req): Promise<OrderPaginatorT> {    
     const id = req?.user?.payload?.id;
-    return this.ordersService.getCustomerOrders(query,id);
+    return this.ordersService.getCustomerOrders(query, id);
   }
 
   @Get('shop')

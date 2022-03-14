@@ -187,9 +187,16 @@ export class OrdersService {
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-
-    let customer = await this.userRepository.findOne(id);
-    let data = await this.orderRepository.find({ customer_id: customer.id });
+    const data = await this.orderRepository
+      .createQueryBuilder("orders")
+      .leftJoinAndSelect('orders.orderProductPivot', 'order')
+      .leftJoinAndSelect('orders.shipping_address', 'shipping_address')
+      .leftJoinAndSelect('orders.billing_address', 'billing_address')
+      .leftJoinAndSelect('orders.customer', 'customer')
+      .leftJoinAndSelect('orders.products', 'products')
+      .where({ customer: id })
+      .getMany();
+    // let data = await this.orderRepository.find({ customer_id: customer.id });
     const results = data.slice(startIndex, endIndex);
     const url = `/orders?search=${search}&limit=${limit}`;
     return {
@@ -252,7 +259,16 @@ export class OrdersService {
   }
 
   async getOrderById(id: number) {
-    return await this.orderRepository.findOne({ id });
+    const data = await this.orderRepository
+      .createQueryBuilder("orders")
+      .leftJoinAndSelect('orders.orderProductPivot', 'order')
+      .leftJoinAndSelect('orders.shipping_address', 'shipping_address')
+      .leftJoinAndSelect('orders.billing_address', 'billing_address')
+      .leftJoinAndSelect('orders.customer', 'customer')
+      .leftJoinAndSelect('orders.products', 'products')
+      .where({ id: id })
+      .getOne();
+    return data;
   }
 
   async getOrderPivotById(id: number) {
