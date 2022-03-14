@@ -53,7 +53,7 @@ export class OrdersController {
   }
 
   @Get()
-  async getOrders(@Query() query: GetOrdersDto): Promise<OrderPaginatorT> {
+  async getOrders(@Query() query: GetOrdersDto) {
     return this.ordersService.getOrders(query);
   }
   

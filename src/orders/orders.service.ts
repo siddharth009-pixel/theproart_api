@@ -19,7 +19,7 @@ import {
   UpdateOrderStatusDto,
 } from './dto/create-order-status.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, getRepository, Repository } from 'typeorm';
+import { getConnection, getManager, getRepository, Repository } from 'typeorm';
 import { UserT } from 'src/users/entities/user.entity';
 import { CouponT } from 'src/coupons/entities/coupon.entity';
 import { UserAddressT } from 'src/addresses/entities/address.entity';
@@ -234,7 +234,15 @@ export class OrdersService {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
-    let data = await this.orderRepository.find();
+    const data = await this.orderRepository
+      .createQueryBuilder("orders")
+      .leftJoinAndSelect('orders.orderProductPivot', 'order')
+      .leftJoinAndSelect('orders.shipping_address', 'shipping_address')
+      .leftJoinAndSelect('orders.billing_address', 'billing_address')
+      .leftJoinAndSelect('orders.customer', 'customer')
+      .leftJoinAndSelect('orders.products', 'products')
+      .getMany();
+
     const results = data.slice(startIndex, endIndex);
     const url = `/orders?search=${search}&limit=${limit}`;
     return {
