@@ -83,8 +83,8 @@ export class ProductsService {
       });
       product.type = type;
     }
-    const date = new Date()
-    product.created_at=date;
+    const date = new Date();
+    product.created_at = date;
     await this.productRepository.save(product);
     if (createProductDto?.categories) {
       createProductDto?.categories.map(async (categories_id) => {
@@ -164,11 +164,19 @@ export class ProductsService {
       related_products,
     };
   }
+  async getProductById(id: string) {
+    const product = await this.productRepository.findOne(id).catch((err) => {
+      console.log(err);
+    });
+
+    return {
+      ...product,
+    };
+  }
   async getPopularProducts({ shop_id, limit }: GetPopularProductsDto) {
     // return this.products?.slice(0, limit);
     return await this.productRepository.find();
   }
-
 
   async updatee(id: number, updateProductDto: UpdateProductDto) {
     console.log(updateProductDto);
@@ -196,27 +204,33 @@ export class ProductsService {
     if (updateProductDto?.image) {
       let image;
       delete updateProductDto?.image.id;
-      const imagedb = await this.prductImageRepository.find({ product: product })
+      const imagedb = await this.prductImageRepository.find({
+        product: product,
+      });
       if (imagedb) {
-        image = await this.prductImageRepository.update({
-          product: product
-        }, {
-          ...updateProductDto?.image,
-          product: product
-        })
+        image = await this.prductImageRepository.update(
+          {
+            product: product,
+          },
+          {
+            ...updateProductDto?.image,
+            product: product,
+          },
+        );
       } else {
         image = await this.prductImageRepository.save({
           ...updateProductDto.image,
-          product: product
-        })
+          product: product,
+        });
       }
     }
 
-
     if (updateProductDto?.gallery) {
-      const oldGallery = await this.prductGalaeyRepository.find({ product: product })
+      const oldGallery = await this.prductGalaeyRepository.find({
+        product: product,
+      });
       for (let old of oldGallery) {
-        await this.prductGalaeyRepository.remove(old)
+        await this.prductGalaeyRepository.remove(old);
       }
       product = await this.productRepository.save(product);
       let galleries = [];
@@ -225,15 +239,11 @@ export class ProductsService {
         gallery.thumbnail = pic.thumbnail;
         gallery.original = pic.original;
         await this.prductGalaeyRepository.save(gallery);
-        galleries.push(gallery)
+        galleries.push(gallery);
       }
       product.gallery = galleries;
       await this.productRepository.save(product);
-
     }
-
-
-
 
     if (updateProductDto?.shop_id) {
       const shop = await this.shopRepository.findOne({
@@ -250,7 +260,7 @@ export class ProductsService {
     await this.productRepository.save(product);
 
     if (updateProductDto?.categories) {
-      const oldCat = product.categories?.map(cat => cat.id);
+      const oldCat = product.categories?.map((cat) => cat.id);
       for (let cat_id of oldCat) {
         await getConnection()
           .createQueryBuilder()
@@ -263,31 +273,28 @@ export class ProductsService {
           .createQueryBuilder()
           .relation(ProductT, 'categories')
           .of(product)
-          .add(cat_id)
+          .add(cat_id);
       }
     }
 
-
-
     if (updateProductDto?.tags) {
-      const oldTags = product.tags.map(tag => tag.id)
-      oldTags.map(async tag_id => {
-          await getConnection()
-            .createQueryBuilder()
-            .relation(ProductT, 'tags')
-            .of(product)
-            .remove(tag_id);
-      })
+      const oldTags = product.tags.map((tag) => tag.id);
+      oldTags.map(async (tag_id) => {
+        await getConnection()
+          .createQueryBuilder()
+          .relation(ProductT, 'tags')
+          .of(product)
+          .remove(tag_id);
+      });
       updateProductDto?.tags.map(async (tag_id) => {
-          await getConnection()
-            .createQueryBuilder()
-            .relation(ProductT, 'tags')
-            .of(product)
-            .add(tag_id);
+        await getConnection()
+          .createQueryBuilder()
+          .relation(ProductT, 'tags')
+          .of(product)
+          .add(tag_id);
       });
     }
     return product;
-
   }
 
   async remove(id: number) {

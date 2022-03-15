@@ -129,7 +129,7 @@ export class ShopsService {
   // @Cron('* */30   * * * *')    
   // @Cron('* * */5 * * *')    
   // @Cron('*/60 * * * * *')
-  @Cron('0 * */24 * * *')    //per 24 hour
+  @Cron('0 0 */24 * * *')    //per 24 hour
   async handleCron() {
     let allOrders = await this.orderProductPivotRepositoy.find()
     console.log('cronjob started for :',new Date());

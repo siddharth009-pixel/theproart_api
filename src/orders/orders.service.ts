@@ -188,7 +188,7 @@ export class OrdersService {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const data = await this.orderRepository
-      .createQueryBuilder("orders")
+      .createQueryBuilder('orders')
       .leftJoinAndSelect('orders.orderProductPivot', 'order')
       .leftJoinAndSelect('orders.shipping_address', 'shipping_address')
       .leftJoinAndSelect('orders.billing_address', 'billing_address')
@@ -242,7 +242,7 @@ export class OrdersService {
     const endIndex = page * limit;
 
     const data = await this.orderRepository
-      .createQueryBuilder("orders")
+      .createQueryBuilder('orders')
       .leftJoinAndSelect('orders.orderProductPivot', 'order')
       .leftJoinAndSelect('orders.shipping_address', 'shipping_address')
       .leftJoinAndSelect('orders.billing_address', 'billing_address')
@@ -262,6 +262,7 @@ export class OrdersService {
     const data = await this.orderRepository
       .createQueryBuilder("orders")
       .leftJoinAndSelect('orders.orderProductPivot', 'order')
+      .leftJoinAndSelect('order.status', 'orderStatus')
       .leftJoinAndSelect('orders.shipping_address', 'shipping_address')
       .leftJoinAndSelect('orders.billing_address', 'billing_address')
       .leftJoinAndSelect('orders.customer', 'customer')
@@ -272,6 +273,8 @@ export class OrdersService {
   }
 
   async getOrderPivotById(id: number) {
+    let data=await this.orderProductPivotRepository.findOne({ id });
+    console.log(data)
     return await this.orderProductPivotRepository.findOne({ id });
     // return await this.orderProductPivotRepository.findOne({ id });
   }

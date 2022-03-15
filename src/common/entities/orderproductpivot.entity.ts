@@ -30,15 +30,16 @@ export class OrderProductPivotT extends CoreEntityT {
   @Column({ nullable: true })
   product_id: number;
 
-  @ManyToOne(() => OrderT, order => order.orderProductPivot,
-    { nullable: true })
+  @ManyToOne(() => OrderT, (order) => order.orderProductPivot, {
+    nullable: true,
+  })
   @JoinColumn()
-  order: OrderT
+  order: OrderT;
 
   @Column({ nullable: true })
   shop_id: number;
 
-  @ManyToOne(() => ShopT, shop => shop.id, { nullable: true })
+  @ManyToOne(() => ShopT, (shop) => shop.id, { nullable: true })
   @JoinColumn()
   shop: ShopT;
 
@@ -52,7 +53,7 @@ export class OrderProductPivotT extends CoreEntityT {
   // @JoinColumn()
   // product: ProductT;
 
-  @ManyToOne(() => ProductT, product => product.id,{eager: true})
+  @ManyToOne(() => ProductT, (product) => product.id)
   @JoinColumn()
   pivot: ProductT;
 
@@ -66,6 +67,4 @@ export class OrderProductPivotT extends CoreEntityT {
   )
   @JoinColumn()
   status: OrderStatusT;
-
-  
 }
