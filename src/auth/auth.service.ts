@@ -35,9 +35,7 @@ import { User, UserT } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { decrypt, encrypt } from 'src/common/cryproencdes';
-import SendOtp from 'sendotp';
-const sendOtp = new SendOtp(`${process.env.SENDOTP_AUTHKEY}`)
-
+const { msg91OTP } = require('msg91-lib');
 @Injectable()
 export class AuthService {
   constructor(
@@ -45,8 +43,13 @@ export class AuthService {
     private jwtService: JwtService,
     @Inject(CACHE_MANAGER)
     private cacheManager: Cache,
-  ) { }
-  
+  ) {}
+
+  msg91otp = new msg91OTP({
+    authKey: process.env.SENDOTP_AUTHKEY,
+    templateId: process.env.SENDOTP_TEMPLATE_ID,
+  });
+
   async register(createUserInput: RegisterDto): Promise<AuthResponse> {
     if (!createUserInput.permission) {
       createUserInput.permission = Permission.CUSTOMER;
@@ -56,8 +59,10 @@ export class AuthService {
       ...createUserInput,
     });
     try {
-      const existingUser=await this.userRepository.findOne({email: createUserInput.email})
-      if(existingUser) {
+      const existingUser = await this.userRepository.findOne({
+        email: createUserInput.email,
+      });
+      if (existingUser) {
         throw new UnauthorizedException('User already exists');
       }
       const user = await this.userRepository.save(newPost);
@@ -176,19 +181,55 @@ export class AuthService {
       permissions: ['super_admin', 'customer'],
     };
   }
-  async verifyOtpCode(verifyOtpInput: VerifyOtpDto): Promise<any> {
-    const data: any = await this.verifyotp(verifyOtpInput)
-      .then((data) => {
-        return data;
-      }).catch((err) => {
-        return err;
-      })
-    return data;
+
+  async sendOtpCode(otpInput: OtpDto) {
+    console.log('calling');
+    if (otpInput?.phone_number) {
+      try {
+        const response = await this.msg91otp.send(otpInput?.phone_number);
+        console.log('response', response);
+        return response;
+      } catch (error) {
+        console.log('error', error);
+        return error;
+      }
+    } else {
+      return {
+        statusCode: 400,
+        message: 'mobile number did not passed',
+      };
+    }
   }
 
+  async verifyOtpCode(verifyOtpInput: VerifyOtpDto): Promise<any> {
+    if (verifyOtpInput?.phone_number && verifyOtpInput?.code) {
+      let args = {
+        otp: +verifyOtpInput?.code,
+      };
+      console.log('args', args);
+      try {
+        const response = await this.msg91otp.verify(
+          verifyOtpInput?.phone_number,
+          args?.otp,
+        );
+        console.log('response', response);
+        return response;
+      } catch (error) {
+        console.log('error', error);
+        return error;
+      }
+    } else {
+      return {
+        statusCode: 400,
+        message: 'Enter OTP correctly',
+      };
+    }
+  }
   async adminApprove(adminRequestDTO: AdminRequest) {
     if (adminRequestDTO?.email) {
-      const user = await this.userRepository.findOne({ email: adminRequestDTO?.email })
+      const user = await this.userRepository.findOne({
+        email: adminRequestDTO?.email,
+      });
       if (user) {
         user.permission = Permission.SUPER_ADMIN;
         return await this.userRepository.save(user);
@@ -196,102 +237,9 @@ export class AuthService {
         throw new NotFoundException('User Not found');
       }
     }
-    return false
+    return false;
   }
 
-  // async sendOtpCode(otpInput: OtpDto): Promise<OtpResponse> {
-  async sendOtpCode(otpInput: OtpDto) {
-
-    const data = await this.sendotp(otpInput)
-      .then((data) => {
-        return data;
-      }).catch((err) => {
-        return err;
-      })
-    return data;
-  }
-
-
-  async sendotp(otpInput) {
-    return new Promise((resolve, reject) => {
-      (async () => {
-        await sendOtp.send(otpInput?.phone_number, "hell1", async function (error, data) {
-          if (error) {
-            return reject(
-              {
-                message: error?.message ? error?.message : 'failed to send otp',
-                success: false,
-                id: error?.message,
-                provider: 'google',
-                phone_number: otpInput?.phone_number,
-                is_contact_exist: true,
-              }
-            );
-          } else {
-            return resolve({
-              message: 'success',
-              success: true,
-              id: data?.message,
-              provider: 'google',
-              phone_number: otpInput?.phone_number,
-              is_contact_exist: true,
-            })
-          }
-        });
-      })();
-    });
-  }
-
-  async verifyotp(otpInput) {
-    return new Promise((resolve, reject) => {
-      (async () => {
-        await sendOtp.verify(otpInput?.phone_number, otpInput?.code, function (error, data) {
-          if (error) return reject(error);
-          if (data) {
-            if (data.type == 'success') {
-              return resolve({
-                message: 'success',
-                success: true
-              })
-            }
-            if (data.type == 'error') {
-              return reject(
-                {
-                  message: 'Incorrect otp',
-                  success: false,
-                }
-              );
-            }
-          }
-          else {
-            return reject(
-              {
-                message: 'Incorrect otp',
-                success: false,
-              }
-            );
-          }
-        });
-      })();
-    });
-  }
-
-  // async getUsers({ text, first, page }: GetUsersArgs): Promise<UserPaginator> {
-  //   const startIndex = (page - 1) * first;
-  //   const endIndex = page * first;
-  //   let data: User[] = this.users;
-  //   if (text?.replace(/%/g, '')) {
-  //     data = fuse.search(text)?.map(({ item }) => item);
-  //   }
-  //   const results = data.slice(startIndex, endIndex);
-  //   return {
-  //     data: results,
-  //     paginatorInfo: paginate(data.length, page, first, results.length),
-  //   };
-  // }
-  // public getUser(getUserArgs: GetUserArgs): User {
-  //   return this.users.find((user) => user.id === getUserArgs.id);
-  // }
   async me(id: number): Promise<UserT> {
     const user = await this.userRepository.findOne({ id });
     return user;

@@ -41,6 +41,7 @@
     "class-validator": "^0.13.2",
     "fuse.js": "^6.4.6",
     "mongoose": "^6.0.13",
+    "msg91-lib": "^2.0.2",
     "mysql2": "^2.3.3",
     "nestjs-razorpay": "^1.0.3",
     "nodemailer": "^6.7.2",
