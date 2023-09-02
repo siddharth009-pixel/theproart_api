@@ -2,7 +2,6 @@ import { Injectable, Req, Res } from '@nestjs/common';
 import * as AWS from "aws-sdk";
 import slugify from 'slugify';
 const shortid = require('shortid');
-
 export interface deleteDto {
     Key: string[];
 }
@@ -12,7 +11,7 @@ export class S3Service {
     AWS_S3_BUCKET = 'theproart';
     s3 = new AWS.S3
         ({
-            accessKeyId: process.env.AWS_ACCESS_KEY,
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
         });
 

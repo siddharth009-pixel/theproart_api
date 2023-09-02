@@ -10,6 +10,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+#ssl pem file
+*.pem
+
 # OS
 .DS_Store
 

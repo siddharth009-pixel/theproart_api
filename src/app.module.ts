@@ -23,8 +23,8 @@ import { ContactModule } from './contact/contact.module';
 import { ConfigModule } from '@nestjs/config';
 import { EmailServiceModule } from './email-service/email-service.module';
 import { RazorpayModule } from 'nestjs-razorpay';
-
 import path from 'path';
+import { getPEMFromSecretsManager } from './aws.utils';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -52,17 +52,49 @@ import path from 'path';
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     }),    
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: +process.env.PG_PORT,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [path.join(__dirname, '**', '*.entity.{ts,js}')],
-      synchronize: process.env.SYNCHRONIZE ? true : false,
-      autoLoadEntities: process.env.SYNCHRONIZE ? true : false,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule], // Import ConfigModule if you need env variables
+      useFactory: async () => {
+        let pemContent;
+        try {
+          pemContent = await getPEMFromSecretsManager('ssl-theproart');
+        } catch (error) {
+          console.error("Error fetching PEM from Secrets Manager:", error);
+          throw error; // This will prevent the app from starting
+        }
+
+        return {
+          type: 'postgres',
+          host: process.env.DB_HOST,
+          port: +process.env.PG_PORT,
+          username: process.env.DB_USER,
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_NAME,
+          entities: [path.join(__dirname, '**', '*.entity.{ts,js}')],
+          synchronize: process.env.SYNCHRONIZE ? true : false,
+          autoLoadEntities: process.env.SYNCHRONIZE ? true : false,
+          ssl: {
+            ca: pemContent,
+            rejectUnauthorized: false
+          }
+        }
+      }
     }),
+    // TypeOrmModule.forRoot({
+    //   type: 'postgres',
+    //   host: process.env.DB_HOST,
+    //   port: +process.env.PG_PORT,
+    //   username: process.env.DB_USER,
+    //   password: process.env.DB_PASSWORD,
+    //   database: process.env.DB_NAME,
+    //   entities: [path.join(__dirname, '**', '*.entity.{ts,js}')],
+    //   synchronize: process.env.SYNCHRONIZE ? true : false,
+    //   autoLoadEntities: process.env.SYNCHRONIZE ? true : false,
+    //   ssl: {
+    //     ca: pemContent,
+    //     rejectUnauthorized: false
+    //   },
+    // }),
     ContactModule,
   ],
   controllers: [],
