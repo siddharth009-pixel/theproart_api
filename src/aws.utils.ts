@@ -9,7 +9,6 @@ const secretsManager = new SecretsManager({
 export async function getPEMFromSecretsManager(secretName: string): Promise<string> {
     try {
         const data = await secretsManager.getSecretValue({ SecretId: secretName }).promise();
-        console.log("data", data);
         if (data.SecretString) {
             return data.SecretString;
         }
